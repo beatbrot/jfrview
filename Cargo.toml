@@ -1,0 +1,13 @@
+[package]
+name = "jfrview"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+eframe = "0.28.1"
+egui = "0.28.1"
+jfrs = "0.2.5"
+
+[dev-dependencies]
+insta = { version = "1.39.0", features = ["yaml"] }

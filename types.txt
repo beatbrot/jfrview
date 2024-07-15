@@ -1,0 +1,53 @@
+dk.ExecutionSample
+- startTime: Some("long")
+- sampledThread: Some("java.lang.Thread")
+- stackTrace: Some("jdk.types.StackTrace")
+- state: Some("jdk.types.ThreadState")
+java.lang.Thread
+  - osName: Some("java.lang.String")
+  - osThreadId: Some("long")
+  - javaName: Some("java.lang.String")
+  - javaThreadId: Some("long")
+  - group: Some("jdk.types.ThreadGroup")
+  - virtual: Some("boolean")
+jdk.types.ThreadGroup
+    - parent: Some("jdk.types.ThreadGroup")
+    - name: Some("java.lang.String")
+jdk.types.StackTrace
+  - truncated: Some("boolean")
+  - frames: Some("jdk.types.StackFrame")
+jdk.types.StackFrame
+    - method: Some("jdk.types.Method")
+    - lineNumber: Some("int")
+    - bytecodeIndex: Some("int")
+    - type: Some("jdk.types.FrameType")
+jdk.types.Method
+      - type: Some("java.lang.Class")
+      - name: Some("jdk.types.Symbol")
+      - descriptor: Some("jdk.types.Symbol")
+      - modifiers: Some("int")
+      - hidden: Some("boolean")
+java.lang.Class
+        - classLoader: Some("jdk.types.ClassLoader")
+        - name: Some("jdk.types.Symbol")
+        - package: Some("jdk.types.Package")
+        - modifiers: Some("int")
+        - hidden: Some("boolean")
+jdk.types.ClassLoader
+          - type: Some("java.lang.Class")
+          - name: Some("jdk.types.Symbol")
+jdk.types.Symbol
+            - string: Some("java.lang.String")
+jdk.types.Package
+          - name: Some("jdk.types.Symbol")
+          - module: Some("jdk.types.Module")
+          - exported: Some("boolean")
+jdk.types.Module
+            - name: Some("jdk.types.Symbol")
+            - version: Some("jdk.types.Symbol")
+            - location: Some("jdk.types.Symbol")
+            - classLoader: Some("jdk.types.ClassLoader")
+jdk.types.FrameType
+      - description: Some("java.lang.String")
+jdk.types.ThreadState
+  - name: Some("java.lang.String")
