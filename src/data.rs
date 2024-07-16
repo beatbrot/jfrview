@@ -11,12 +11,6 @@ pub struct ExecutionSample {
     pub stack_trace: StackTrace,
 }
 
-impl ExecutionSample {
-    pub fn depth(&self) -> usize {
-        return self.stack_trace.frames.len();
-    }
-}
-
 impl From<Event<'_>> for ExecutionSample {
     fn from(value: Event) -> Self {
         let v = value.value();

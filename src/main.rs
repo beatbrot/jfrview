@@ -1,10 +1,10 @@
 mod data;
 mod flame_graph;
+mod ui;
 
 use std::{env, fs::File};
 
 use data::ExecutionSample;
-use egui::{vec2, Color32, FontId, Pos2};
 use flame_graph::{FlameGraph, Frame};
 use jfrs::reader::JfrReader;
 
@@ -46,27 +46,13 @@ fn draw_node(
     let node_width = (frame.ticks as f32 / parent_ticks as f32) * max_width;
     let node_height = 20.0;
     let y = depth as f32 * node_height;
-
-    ui.painter().rect_filled(
-        egui::Rect::from_min_size(Pos2::new(x, y), vec2(node_width, node_height)),
-        0.0,
-        Color32::RED,
-    );
-    ui.painter().rect_filled(
-        egui::Rect::from_min_size(
-            Pos2::new(x + 2.0, y + 2.0),
-            vec2(node_width - 4.0, node_height - 4.0),
-        ),
-        0.0,
-        Color32::YELLOW,
-    );
-
-    ui.painter().text(
-        egui::Pos2::new(x, y),
-        egui::Align2::LEFT_TOP,
+    crate::ui::block::block(
+        ui,
+        x,
+        y,
+        node_width,
+        node_height,
         format!("{:?}", frame.method),
-        FontId::default(),
-        egui::Color32::BLACK,
     );
 
     let mut child_x: f32 = x;
