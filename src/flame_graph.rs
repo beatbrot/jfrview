@@ -1,12 +1,13 @@
+use indexmap::IndexMap;
 use jfrs::reader::JfrReader;
 
 use crate::data::{ExecutionSample, Method};
-use std::{collections::HashMap, fs::File};
+use std::fs::File;
 
 #[derive(Default, Debug)]
 pub struct FlameGraph {
     depth: usize,
-    pub frames: HashMap<Method, Frame>,
+    pub frames: IndexMap<Method, Frame>,
 }
 
 impl From<File> for FlameGraph {
@@ -31,15 +32,15 @@ impl From<File> for FlameGraph {
 pub struct Frame {
     pub method: Method,
     pub ticks: usize,
-    pub children: HashMap<Method, Frame>,
+    pub children: IndexMap<Method, Frame>,
 }
 
 impl Frame {
     fn new(method: Method) -> Self {
         Self {
             method,
-            ticks: 0,
-            children: HashMap::default(),
+            ticks: Default::default(),
+            children: Default::default(),
         }
     }
 }
