@@ -105,18 +105,6 @@ pub struct Method {
     class: Class,
 }
 
-/*
-impl Default for Method {
-    fn default() -> Self {
-        Self {
-            name: "".to_string(),
-            class: Class {
-                name: "".to_string(),
-            },
-        }
-    }
-}*/
-
 impl std::fmt::Debug for Method {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}:{}", self.class, self.name)

@@ -4,9 +4,7 @@ mod ui;
 
 use std::{env, fs::File};
 
-use data::ExecutionSample;
 use flame_graph::{FlameGraph, Frame};
-use jfrs::reader::JfrReader;
 
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
@@ -70,21 +68,5 @@ fn draw_node(
 
 fn create_flame_graph(path: &str) -> FlameGraph {
     let file = File::open(path).unwrap();
-    let mut reader = JfrReader::new(file);
-
-    let mut fg = FlameGraph::default();
-
-    for (mut r, c) in reader.chunks().flatten() {
-        for sample in r
-            .events(&c)
-            .flatten()
-            .filter(|e| e.class.name() == "jdk.ExecutionSample")
-            .map(|e| ExecutionSample::from(e))
-        {
-            if !sample.stack_trace.truncated {
-                fg.add_sample(sample);
-            }
-        }
-    }
-    return fg;
+    FlameGraph::from(file)
 }

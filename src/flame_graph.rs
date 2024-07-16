@@ -1,10 +1,30 @@
+use jfrs::reader::JfrReader;
+
 use crate::data::{ExecutionSample, Method};
-use std::collections::HashMap;
+use std::{collections::HashMap, fs::File};
 
 #[derive(Default, Debug)]
 pub struct FlameGraph {
     depth: usize,
     pub frames: HashMap<Method, Frame>,
+}
+
+impl From<File> for FlameGraph {
+    fn from(value: File) -> Self {
+        let mut reader = JfrReader::new(value);
+
+        let mut fg = FlameGraph::default();
+
+        for (mut r, c) in reader.chunks().flatten() {
+            r.events(&c)
+                .flatten()
+                .filter(|e| e.class.name() == "jdk.ExecutionSample")
+                .map(|e| ExecutionSample::from(e))
+                .filter(|e| !e.stack_trace.truncated)
+                .for_each(|s| fg.add_sample(s));
+        }
+        return fg;
+    }
 }
 
 #[derive(Debug)]
