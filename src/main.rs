@@ -16,11 +16,11 @@ fn main() {
     };
     eframe::run_simple_native("JfrView", options, move |ctx, _| {
         egui::CentralPanel::default().show(&ctx, |ui| {
-            let (width, _) = (ui.available_width(), ui.available_height());
+            let (width, height) = (ui.available_width(), ui.available_height());
             let parent_ticks: usize = fg.frames.values().map(|v| v.ticks).sum();
             let mut child_x = 0.0;
             for child in fg.frames.values() {
-                child_x += draw_node(ui, parent_ticks, child, child_x, width, 0);
+                child_x += draw_node(ui, parent_ticks, child, child_x, width, height, 0);
             }
         });
     })
@@ -33,6 +33,7 @@ fn draw_node(
     frame: &Frame,
     x: f32,
     max_width: f32,
+    max_height: f32,
     depth: usize,
 ) -> f32 {
     assert!(
@@ -43,7 +44,7 @@ fn draw_node(
     );
     let node_width = (frame.ticks as f32 / parent_ticks as f32) * max_width;
     let node_height = 20.0;
-    let y = depth as f32 * node_height;
+    let y = max_height - (depth as f32 * node_height);
     crate::ui::block::block(
         ui,
         x,
@@ -61,7 +62,15 @@ fn draw_node(
             ele.ticks,
             frame.ticks
         );
-        child_x += draw_node(ui, frame.ticks, ele, child_x, node_width, depth + 1);
+        child_x += draw_node(
+            ui,
+            frame.ticks,
+            ele,
+            child_x,
+            node_width,
+            max_height,
+            depth + 1,
+        );
     }
     return node_width;
 }
