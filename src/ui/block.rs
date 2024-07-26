@@ -1,43 +1,44 @@
-use egui::{vec2, Color32, FontId, Pos2, Rect, Ui, Vec2};
-use once_cell::sync::Lazy;
+use egui::{pos2, vec2, Align2, Color32, Id, Pos2, Rect, Ui};
 
-static GREENS: Lazy<Vec<Color32>> = Lazy::new(|| {
-    vec![
-        Color32::from_hex("#5CFF5C").unwrap(),
-        Color32::from_hex("#49CC49").unwrap(),
-        Color32::from_hex("#40B340").unwrap(),
-        //        Color32::from_hex("#379937").unwrap(),
-    ]
-});
+use crate::ui::theme::FONT;
 
-static HOVER: Lazy<Color32> = Lazy::new(|| Color32::from_hex("#FFFFE0").unwrap());
+pub const HEIGHT: f32 = 15.0;
 
-pub fn block(ui: &mut Ui, x: f32, y: f32, width: f32, text: String) {
-    assert!(x >= 0.0);
-    assert!(y >= 0.0);
+/// Returns a boolean indicating whether the block is hovered
+pub fn block(
+    ui: &mut Ui,
+    pos: Pos2,
+    width: f32,
+    text: String,
+    color: impl FnOnce(bool) -> Color32,
+) -> bool {
+    assert!(pos.x >= 0.0);
+    assert!(pos.y >= 0.0);
     assert!(width > 0.0);
 
-    let idx = (y / 20.0) as usize % GREENS.len();
-    let green = GREENS.get(idx).unwrap().to_owned();
-
-    let height = 20.0;
-    let rect =
-        // White vertical border of 1px
-        Rect::from_min_size(Pos2::new(x, y), vec2(width, height)).expand2(Vec2::new(0.0, -1.0));
+    // White vertical border of 1px
+    let rect = Rect::from_min_size(pos, vec2(width, HEIGHT)).expand2(vec2(0.0, -1.0));
 
     let hover_pos: Option<Pos2> = ui.input(|i| i.pointer.hover_pos());
+
     let hovered = hover_pos.map(|p| rect.contains(p)).unwrap_or(false);
     if hovered {
-        ui.output_mut(|o| o.cursor_icon = egui::CursorIcon::PointingHand);
+        render_hover(ui);
+        ui.data_mut(|d| d.insert_temp(Id::new("hovered_method"), text.clone()));
     }
-    ui.painter()
-        .rect_filled(rect, 0.0, if hovered { HOVER.to_owned() } else { green });
+
+    ui.painter().rect_filled(rect, 0.0, color(hovered));
 
     ui.painter().text(
-        egui::Pos2::new(x + 2.0, y + 4.0),
-        egui::Align2::LEFT_TOP,
+        pos2(pos.x + 2.0, pos.y + 1.0),
+        Align2::LEFT_TOP,
         text,
-        FontId::proportional(12.0),
-        egui::Color32::BLACK,
+        FONT,
+        Color32::BLACK,
     );
+    hovered
+}
+
+fn render_hover(ui: &mut Ui) {
+    ui.output_mut(|o| o.cursor_icon = egui::CursorIcon::PointingHand);
 }
