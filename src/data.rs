@@ -107,7 +107,7 @@ pub struct Method {
 
 impl std::fmt::Debug for Method {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}:{}", self.class, self.name)
+        write!(f, "{}:{}", self.class.short_name(), self.name)
     }
 }
 
@@ -123,6 +123,27 @@ impl From<Accessor<'_>> for Method {
 #[allow(dead_code)]
 pub struct Class {
     name: String,
+}
+
+impl Class {
+    pub fn short_name(&self) -> String {
+        let segments: Vec<&str> = self.name.split('/').collect();
+        let mut result = String::new();
+
+        for (i, segment) in segments.iter().enumerate() {
+            if i != 0 {
+                result.push('/');
+            }
+
+            if i == segments.len() - 1 {
+                result.push_str(segment);
+            } else if !segment.is_empty() {
+                result.push(segment.chars().next().unwrap());
+            }
+        }
+
+        return result;
+    }
 }
 
 impl std::fmt::Display for Class {

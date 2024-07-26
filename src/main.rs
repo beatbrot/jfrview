@@ -43,16 +43,11 @@ fn draw_node(
         parent_ticks
     );
     let node_width = (frame.ticks as f32 / parent_ticks as f32) * max_width;
-    let node_height = 20.0;
-    let y = max_height - (depth as f32 * node_height);
-    crate::ui::block::block(
-        ui,
-        x,
-        y,
-        node_width,
-        node_height,
-        format!("{:?}", frame.method),
-    );
+    let y = max_height - (depth as f32 * 20.0);
+    if y < 0.0 {
+        return 0.0;
+    }
+    crate::ui::block::block(ui, x, y, node_width, format!("{:?}", frame.method));
 
     let mut child_x: f32 = x;
     for ele in frame.children.values() {
@@ -72,6 +67,7 @@ fn draw_node(
             depth + 1,
         );
     }
+    assert!(node_width > 0.0);
     return node_width;
 }
 
