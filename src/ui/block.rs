@@ -42,9 +42,14 @@ pub fn block(
 fn trim_text(width: f32, text: String) -> String {
     // 6 is just a guess here
     let chars = width as usize / 6;
-    let mut t2 = text.clone();
-    t2.truncate(chars);
-    t2
+    if chars > 0 {
+        let mut t2 = text.clone();
+        t2.truncate(chars);
+        t2.push_str("..");
+        t2
+    } else {
+        String::new()
+    }
 }
 
 fn render_hover(ui: &mut Ui) {
