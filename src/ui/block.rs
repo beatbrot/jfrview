@@ -32,11 +32,19 @@ pub fn block(
     ui.painter().text(
         pos2(pos.x + 2.0, pos.y + 1.0),
         Align2::LEFT_TOP,
-        text,
+        trim_text(width, text),
         FONT,
         Color32::BLACK,
     );
     hovered
+}
+
+fn trim_text(width: f32, text: String) -> String {
+    // 6 is just a guess here
+    let chars = width as usize / 6;
+    let mut t2 = text.clone();
+    t2.truncate(chars);
+    t2
 }
 
 fn render_hover(ui: &mut Ui) {
