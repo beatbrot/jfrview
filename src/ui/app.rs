@@ -39,7 +39,7 @@ impl App for JfrViewApp {
                 });
             }
         });
-        egui::CentralPanel::default().show(ctx, |ui| {
+        egui::CentralPanel::default().frame(egui::containers::Frame::none()).show(ctx, |ui| {
             let (width, height) = (ui.available_width(), ui.available_height());
             let parent_ticks: usize = self.flame_graph.frames.values().map(|v| v.ticks).sum();
             let mut child_x = 0.0;
