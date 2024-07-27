@@ -1,10 +1,12 @@
 use std::io::Cursor;
 use std::sync::mpsc::{channel, Receiver, Sender};
+
+use eframe::{App, Frame};
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
-use eframe::{App, Frame};
-use egui::{Context, Id};
-use rfd::{AsyncFileDialog};
+use egui::{Context, Id, Style};
+use rfd::AsyncFileDialog;
+
 use crate::exec::exec;
 use crate::flame_graph::FlameGraph;
 use crate::ui::block::{block, HEIGHT};
@@ -14,6 +16,7 @@ use crate::ui::theme::HOVER;
 pub struct JfrViewApp {
     flame_graph: FlameGraph,
     file_channel: (Sender<FlameGraph>, Receiver<FlameGraph>),
+    include_native: bool,
     hovered: Option<String>,
 }
 
@@ -24,22 +27,28 @@ impl App for JfrViewApp {
             self.flame_graph = fg;
         }
 
-        egui::TopBottomPanel::top(Id::new("top")).show(ctx, |ui|{
-           let button = ui.button("Pick file!");
-            if button.clicked() {
-                let sender = self.file_channel.0.clone();
-                let ctx = ctx.clone();
-                exec(async move {
-                    if let Some(path) = AsyncFileDialog::new().pick_file().await {
-                        let bytes = path.read().await;
-                        let cursor = Cursor::new(bytes);
-                        sender.send(FlameGraph::from(cursor)).unwrap();
-                        ctx.request_repaint();
-                    }
-                });
-            }
+
+        egui::TopBottomPanel::top(Id::new("top")).show(ctx, |ui| {
+            ui.horizontal(|ui| {
+                let button = ui.button("Pick file!");
+                if button.clicked() {
+                    let sender = self.file_channel.0.clone();
+                    let ctx = ctx.clone();
+                    let native = self.include_native;
+                    exec(async move {
+                        if let Some(path) = AsyncFileDialog::new().pick_file().await {
+                            let bytes = path.read().await;
+                            let cursor = Cursor::new(bytes);
+                            sender.send(FlameGraph::new(cursor, native)).unwrap();
+                            ctx.request_repaint();
+                        }
+                    });
+                }
+                ui.checkbox(&mut self.include_native, "Include native");
+            });
         });
-        egui::CentralPanel::default().frame(egui::containers::Frame::none()).show(ctx, |ui| {
+
+        egui::CentralPanel::default().frame(Self::central_frame(&ctx.style())).show(ctx, |ui| {
             let (width, height) = (ui.available_width(), ui.available_height());
             let parent_ticks: usize = self.flame_graph.frames.values().map(|v| v.ticks).sum();
             let mut child_x = 0.0;
@@ -68,6 +77,7 @@ impl JfrViewApp {
         Self {
             file_channel: channel(),
             flame_graph,
+            include_native: false,
             hovered: None,
         }
     }
@@ -125,6 +135,12 @@ impl JfrViewApp {
         } else {
             theme::pick_green(index)
         }
+    }
+
+    fn central_frame(style: &Style) -> egui::containers::Frame{
+        egui::containers::Frame::central_panel(style)
+            .outer_margin(0.0)
+            .inner_margin(0.0)
     }
 }
 

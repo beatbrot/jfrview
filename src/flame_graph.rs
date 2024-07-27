@@ -10,21 +10,22 @@ pub struct FlameGraph {
     pub frames: IndexMap<Method, Frame>,
 }
 
-impl FlameGraph {}
+const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
+const NATIVE_EXEC_SAMPLE: &str = "jdk.NativeMethodSample";
 
-impl<T> From<T> for FlameGraph
-where
-    T: Read + Seek,
-{
-    fn from(value: T) -> Self {
+impl FlameGraph {
+    
+    pub fn new<T>(value: T, include_native: bool) -> FlameGraph
+    where
+        T: Read + Seek,
+    {
         let mut reader = JfrReader::new(value);
-
         let mut fg = FlameGraph::default();
 
         for (mut r, c) in reader.chunks().flatten() {
             r.events(&c)
                 .flatten()
-                .filter(|e| e.class.name() == "jdk.ExecutionSample")
+                .filter(|e| e.class.name() == EXEC_SAMPLE || (include_native && e.class.name() == NATIVE_EXEC_SAMPLE))
                 .map(|e| ExecutionSample::from(e))
                 .filter(|e| !e.stack_trace.truncated)
                 .for_each(|s| fg.add_sample(s));
