@@ -28,7 +28,7 @@ impl From<File> for FlameGraph {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Frame {
     pub method: Method,
     pub ticks: usize,

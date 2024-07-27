@@ -20,7 +20,6 @@ pub fn block(
     let rect = Rect::from_min_size(pos, vec2(width, HEIGHT)).expand2(vec2(0.0, -1.0));
 
     let hover_pos: Option<Pos2> = ui.input(|i| i.pointer.hover_pos());
-    let clicked = ui.input(|i| i.pointer.primary_clicked());
 
     let hovered = hover_pos.map(|p| rect.contains(p)).unwrap_or(false);
     if hovered {
