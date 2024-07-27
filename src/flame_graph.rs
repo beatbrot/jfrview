@@ -14,7 +14,6 @@ const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
 const NATIVE_EXEC_SAMPLE: &str = "jdk.NativeMethodSample";
 
 impl FlameGraph {
-    
     pub fn new<T>(value: T, include_native: bool) -> FlameGraph
     where
         T: Read + Seek,
@@ -25,7 +24,10 @@ impl FlameGraph {
         for (mut r, c) in reader.chunks().flatten() {
             r.events(&c)
                 .flatten()
-                .filter(|e| e.class.name() == EXEC_SAMPLE || (include_native && e.class.name() == NATIVE_EXEC_SAMPLE))
+                .filter(|e| {
+                    e.class.name() == EXEC_SAMPLE
+                        || (include_native && e.class.name() == NATIVE_EXEC_SAMPLE)
+                })
                 .map(|e| ExecutionSample::from(e))
                 .filter(|e| !e.stack_trace.truncated)
                 .for_each(|s| fg.add_sample(s));

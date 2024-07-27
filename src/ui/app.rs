@@ -1,9 +1,9 @@
 use std::io::Cursor;
 use std::sync::mpsc::{channel, Receiver, Sender};
 
-use eframe::{App, Frame};
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
+use eframe::{App, Frame};
 use egui::{Context, Id, Style};
 use rfd::AsyncFileDialog;
 
@@ -27,7 +27,6 @@ impl App for JfrViewApp {
             self.flame_graph = fg;
         }
 
-
         egui::TopBottomPanel::top(Id::new("top")).show(ctx, |ui| {
             ui.horizontal(|ui| {
                 let button = ui.button("Pick file!");
@@ -48,27 +47,29 @@ impl App for JfrViewApp {
             });
         });
 
-        egui::CentralPanel::default().frame(Self::central_frame(&ctx.style())).show(ctx, |ui| {
-            let (width, height) = (ui.available_width(), ui.available_height());
-            let parent_ticks: usize = self.flame_graph.frames.values().map(|v| v.ticks).sum();
-            let mut child_x = 0.0;
-            let frames: Vec<_> = self
-                .flame_graph
-                .frames
-                .values()
-                .map(|v| v.to_owned())
-                .collect();
-            for child in frames {
-                let fi: FrameInfo = FrameInfo {
-                    frame: &child,
-                    depth: 1,
-                    h_offset: child_x,
-                    parent_ticks,
-                };
-                child_x += self.draw_node(ui, &fi, width, height);
-            }
-            self.draw_hover_info(ui, height);
-        });
+        egui::CentralPanel::default()
+            .frame(Self::central_frame(&ctx.style()))
+            .show(ctx, |ui| {
+                let (width, height) = (ui.available_width(), ui.available_height());
+                let parent_ticks: usize = self.flame_graph.frames.values().map(|v| v.ticks).sum();
+                let mut child_x = 0.0;
+                let frames: Vec<_> = self
+                    .flame_graph
+                    .frames
+                    .values()
+                    .map(|v| v.to_owned())
+                    .collect();
+                for child in frames {
+                    let fi: FrameInfo = FrameInfo {
+                        frame: &child,
+                        depth: 1,
+                        h_offset: child_x,
+                        parent_ticks,
+                    };
+                    child_x += self.draw_node(ui, &fi, width, height);
+                }
+                self.draw_hover_info(ui, height);
+            });
     }
 }
 
@@ -137,7 +138,7 @@ impl JfrViewApp {
         }
     }
 
-    fn central_frame(style: &Style) -> egui::containers::Frame{
+    fn central_frame(style: &Style) -> egui::containers::Frame {
         egui::containers::Frame::central_panel(style)
             .outer_margin(0.0)
             .inner_margin(0.0)
