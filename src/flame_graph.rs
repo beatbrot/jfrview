@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 use jfrs::reader::JfrReader;
 
 use crate::data::{ExecutionSample, Method};
-use std::fs::File;
+use std::io::{Read, Seek};
 
 #[derive(Default, Debug)]
 pub struct FlameGraph {
@@ -10,8 +10,13 @@ pub struct FlameGraph {
     pub frames: IndexMap<Method, Frame>,
 }
 
-impl From<File> for FlameGraph {
-    fn from(value: File) -> Self {
+impl FlameGraph {}
+
+impl<T> From<T> for FlameGraph
+where
+    T: Read + Seek,
+{
+    fn from(value: T) -> Self {
         let mut reader = JfrReader::new(value);
 
         let mut fg = FlameGraph::default();

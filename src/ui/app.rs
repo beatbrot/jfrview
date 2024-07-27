@@ -1,8 +1,11 @@
+use std::io::Cursor;
+use std::sync::mpsc::{channel, Receiver, Sender};
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
 use eframe::{App, Frame};
-use egui::Context;
-
+use egui::{Context, Id};
+use rfd::{AsyncFileDialog};
+use crate::exec::exec;
 use crate::flame_graph::FlameGraph;
 use crate::ui::block::{block, HEIGHT};
 use crate::ui::theme;
@@ -10,13 +13,37 @@ use crate::ui::theme::HOVER;
 
 pub struct JfrViewApp {
     flame_graph: FlameGraph,
+    file_channel: (Sender<FlameGraph>, Receiver<FlameGraph>),
     hovered: Option<String>,
 }
 
 impl App for JfrViewApp {
     fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
+        self.hovered = None;
+        if let Ok(fg) = self.file_channel.1.try_recv() {
+            self.flame_graph = fg;
+        }
+
+        egui::TopBottomPanel::top(Id::new("top")).show(ctx, |ui|{
+           let button = ui.button("Pick file!");
+            if button.clicked() {
+                log::info!("Clicked!");
+                let future = AsyncFileDialog::new()
+                    .pick_file();
+                let sender = self.file_channel.0.clone();
+                let ctx = ctx.clone();
+                exec(async move {
+                    let res = future.await;
+                    if let Some(path) = res {
+                        let bytes = path.read().await;
+                        let cursor = Cursor::new(bytes);
+                        sender.send(FlameGraph::from(cursor)).unwrap();
+                        ctx.request_repaint();
+                    }
+                });
+            }
+        });
         egui::CentralPanel::default().show(ctx, |ui| {
-            self.hovered = None;
             let (width, height) = (ui.available_width(), ui.available_height());
             let parent_ticks: usize = self.flame_graph.frames.values().map(|v| v.ticks).sum();
             let mut child_x = 0.0;
@@ -43,6 +70,7 @@ impl App for JfrViewApp {
 impl JfrViewApp {
     pub fn new(flame_graph: FlameGraph) -> Self {
         Self {
+            file_channel: channel(),
             flame_graph,
             hovered: None,
         }
