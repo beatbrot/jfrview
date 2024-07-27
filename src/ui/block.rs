@@ -20,6 +20,7 @@ pub fn block(
     let rect = Rect::from_min_size(pos, vec2(width, HEIGHT)).expand2(vec2(0.0, -1.0));
 
     let hover_pos: Option<Pos2> = ui.input(|i| i.pointer.hover_pos());
+    let clicked = ui.input(|i| i.pointer.primary_clicked());
 
     let hovered = hover_pos.map(|p| rect.contains(p)).unwrap_or(false);
     if hovered {
@@ -42,7 +43,9 @@ pub fn block(
 fn trim_text(width: f32, text: String) -> String {
     // 6 is just a guess here
     let chars = width as usize / 6;
-    if chars > 0 {
+    if chars >= text.len() {
+        text
+    } else if chars > 0 {
         let mut t2 = text.clone();
         t2.truncate(chars);
         t2.push_str("..");
