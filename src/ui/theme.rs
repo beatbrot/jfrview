@@ -13,7 +13,7 @@ pub const HOVER: Lazy<Color32> = Lazy::new(|| Color32::from_hex("#FFFFE0").unwra
 
 pub const FONT: FontId = FontId::proportional(12.0);
 
-pub fn pick_green(indx: usize) -> Color32 {
-    let i = indx % GREENS.len();
+pub fn pick_green(index: usize) -> Color32 {
+    let i = index % GREENS.len();
     return GREENS.get(i).unwrap().to_owned();
 }
