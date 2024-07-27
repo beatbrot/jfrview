@@ -27,7 +27,6 @@ impl App for JfrViewApp {
         egui::TopBottomPanel::top(Id::new("top")).show(ctx, |ui|{
            let button = ui.button("Pick file!");
             if button.clicked() {
-                log::info!("Clicked!");
                 let sender = self.file_channel.0.clone();
                 let ctx = ctx.clone();
                 exec(async move {
