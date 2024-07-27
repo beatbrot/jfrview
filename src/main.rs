@@ -1,6 +1,5 @@
-use flame_graph::FlameGraph;
-use std::{env, error::Error, fs::File};
-
+use std::{env, error::Error};
+use eframe::{AppCreator};
 use crate::ui::app::JfrViewApp;
 
 mod data;
@@ -14,7 +13,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     eframe::run_native(
         "JfrView",
         Default::default(),
-        Box::new(|_| Ok(Box::new(JfrViewApp::new(Default::default())))),
+        create_app(),
     )?;
     Ok(())
 }
@@ -24,17 +23,19 @@ fn main() {
     use eframe::WebRunner;
 
     eframe::WebLogger::init(log::LevelFilter::Debug).ok();
-    let fg = FlameGraph::default();
 
-    let web_options = eframe::WebOptions::default();
     wasm_bindgen_futures::spawn_local(async {
-        let start_result = WebRunner::new()
+        WebRunner::new()
             .start(
                 "canvas",
-                web_options,
-                Box::new(|_| Ok(Box::new(JfrViewApp::new(fg)))),
+                Default::default(),
+                create_app(),
             )
             .await
             .unwrap();
     });
+}
+
+fn create_app() -> AppCreator {
+    Box::new(|_| Ok(Box::new(JfrViewApp::new(Default::default()))))
 }

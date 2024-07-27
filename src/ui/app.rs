@@ -28,13 +28,10 @@ impl App for JfrViewApp {
            let button = ui.button("Pick file!");
             if button.clicked() {
                 log::info!("Clicked!");
-                let future = AsyncFileDialog::new()
-                    .pick_file();
                 let sender = self.file_channel.0.clone();
                 let ctx = ctx.clone();
                 exec(async move {
-                    let res = future.await;
-                    if let Some(path) = res {
+                    if let Some(path) = AsyncFileDialog::new().pick_file().await {
                         let bytes = path.read().await;
                         let cursor = Cursor::new(bytes);
                         sender.send(FlameGraph::from(cursor)).unwrap();
