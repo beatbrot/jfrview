@@ -22,9 +22,14 @@ impl App for JfrViewApp {
             let mut child_x = 0.0;
             let frames: Vec<_> = self.flame_graph.frames.values().map(|v| v.to_owned()).collect();
             for child in frames {
-                child_x += self.draw_node(ui, parent_ticks, &child, child_x, width, height, 1);
+                let fi: FrameInfo = FrameInfo {
+                    frame: &child,
+                    depth: 1,
+                    h_offset: child_x,
+                    parent_ticks,
+                };
+                child_x += self.draw_node(ui, &fi, width, height);
             }
-            assert_eq!(width, child_x);
             self.draw_hover_info(ui, height);
         });
     }
@@ -38,41 +43,36 @@ impl JfrViewApp {
     fn draw_node(
         &mut self,
         ui: &mut egui::Ui,
-        parent_ticks: usize,
-        frame: &crate::flame_graph::Frame,
-        x: f32,
+        frame_info: &FrameInfo,
         max_width: f32,
         max_height: f32,
-        depth: usize,
     ) -> f32 {
-        assert!((frame.ticks as f32 / parent_ticks as f32) <= 1.0);
-        let node_width = (frame.ticks as f32 / parent_ticks as f32) * max_width;
-        let y = max_height - (depth as f32 * HEIGHT);
+        assert!((frame_info.frame.ticks as f32 / frame_info.parent_ticks as f32) <= 1.0);
+        let node_width = (frame_info.frame.ticks as f32 / frame_info.parent_ticks as f32) * max_width;
+        let y = max_height - (frame_info.depth as f32 * HEIGHT);
         if y < 0.0 {
             return 0.0;
         }
         let hovered = block(
             ui,
-            pos2(x, y),
+            pos2(frame_info.h_offset, y),
             node_width,
-            format!("{:?}", frame.method),
-            |h| Self::get_hover_color(depth, h),
+            format!("{:?}", frame_info.frame.method),
+            |h| Self::get_hover_color(frame_info.depth, h),
         );
         if hovered {
-            self.hovered = Some(format!("{:?}", frame.method));
+            self.hovered = Some(format!("{:?}", frame_info.frame.method));
         }
 
-        let mut child_x: f32 = x;
-        for ele in frame.children.values() {
-            assert!(ele.ticks <= frame.ticks);
+        let mut child_x: f32 = frame_info.h_offset;
+        for ele in frame_info.frame.children.values() {
+            assert!(ele.ticks <= frame_info.frame.ticks);
+            let fi = frame_info.for_child(ele, child_x);
             child_x += self.draw_node(
                 ui,
-                frame.ticks,
-                ele,
-                child_x,
+                &fi,
                 node_width,
                 max_height,
-                depth + 1,
             );
         }
         assert!(node_width > 0.0);
@@ -96,6 +96,24 @@ impl JfrViewApp {
             HOVER.to_owned()
         } else {
             theme::pick_green(index)
+        }
+    }
+}
+
+struct FrameInfo<'a> {
+    frame: &'a crate::flame_graph::Frame,
+    parent_ticks: usize,
+    h_offset: f32,
+    depth: usize,
+}
+
+impl FrameInfo<'_> {
+    fn  for_child<'a>(&self, other: &'a crate::flame_graph::Frame, h_offset: f32) -> FrameInfo<'a> {
+        FrameInfo {
+            frame: other,
+            parent_ticks: self.frame.ticks,
+            h_offset,
+            depth: self.depth + 1,
         }
     }
 }
