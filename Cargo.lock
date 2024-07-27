@@ -1538,7 +1538,9 @@ dependencies = [
  "egui",
  "indexmap",
  "jfrs",
+ "log",
  "once_cell",
+ "wasm-bindgen-futures",
 ]
 
 [[package]]
