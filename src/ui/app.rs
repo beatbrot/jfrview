@@ -51,6 +51,17 @@ impl App for JfrViewApp {
     }
 }
 
+impl Default for JfrViewApp {
+    fn default() -> Self {
+        Self {
+            file_channel: channel(),
+            flame_graph: Default::default(),
+            include_native: false,
+            hovered: None,
+        }
+    }
+}
+
 impl JfrViewApp {
     pub fn new(flame_graph: FlameGraph) -> Self {
         Self {
