@@ -105,7 +105,7 @@ impl JfrViewApp {
             |h| Self::get_hover_color(frame_info.depth, h),
         );
         if hovered {
-            self.hovered = Some(format!("{:?}", frame_info.frame.method));
+            self.hovered = Some(format!("{:?} ({} samples)", frame_info.frame.method, frame_info.frame.ticks));
         }
 
         let mut child_x: f32 = frame_info.h_offset;
