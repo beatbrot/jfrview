@@ -1,23 +1,20 @@
-use std::io::Cursor;
 use std::sync::mpsc::{channel, Receiver, Sender};
 
+use eframe::{App, Frame};
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
-use eframe::{App, Frame};
-use egui::{Context, Id, Style};
-use rfd::AsyncFileDialog;
+use egui::{Context, Style};
 
-use crate::exec::exec;
 use crate::flame_graph::FlameGraph;
 use crate::ui::block::{block, HEIGHT};
 use crate::ui::theme;
 use crate::ui::theme::HOVER;
 
 pub struct JfrViewApp {
-    flame_graph: FlameGraph,
-    file_channel: (Sender<FlameGraph>, Receiver<FlameGraph>),
-    include_native: bool,
-    hovered: Option<String>,
+    pub flame_graph: FlameGraph,
+    pub file_channel: (Sender<FlameGraph>, Receiver<FlameGraph>),
+    pub include_native: bool,
+    pub hovered: Option<String>,
 }
 
 impl App for JfrViewApp {
@@ -27,26 +24,7 @@ impl App for JfrViewApp {
             self.flame_graph = fg;
         }
 
-        egui::TopBottomPanel::top(Id::new("top")).show(ctx, |ui| {
-            ui.horizontal(|ui| {
-                let button = ui.button("Pick file!");
-                if button.clicked() {
-                    let sender = self.file_channel.0.clone();
-                    let ctx = ctx.clone();
-                    let native = self.include_native;
-                    exec(async move {
-                        if let Some(path) = AsyncFileDialog::new().pick_file().await {
-                            let bytes = path.read().await;
-                            let cursor = Cursor::new(bytes);
-                            sender.send(FlameGraph::new(cursor, native)).unwrap();
-                            ctx.request_repaint();
-                        }
-                    });
-                }
-                ui.checkbox(&mut self.include_native, "Include native");
-            });
-        });
-
+        self.create_menubar(ctx);
         egui::CentralPanel::default()
             .frame(Self::central_frame(&ctx.style()))
             .show(ctx, |ui| {
