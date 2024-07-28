@@ -6,7 +6,6 @@ use std::io::{Read, Seek};
 
 #[derive(Default, Debug)]
 pub struct FlameGraph {
-    depth: usize,
     pub frames: IndexMap<Method, Frame>,
 }
 
@@ -56,13 +55,10 @@ impl Frame {
 impl FlameGraph {
     pub fn add_sample(&mut self, sample: ExecutionSample) {
         let mut cframe = &mut self.frames;
-        let mut depth: usize = 0;
         for frame in sample.stack_trace.frames {
             let entry = cframe
                 .entry(frame.method.clone())
                 .or_insert_with(|| Frame::new(frame.method.clone()));
-            depth += 1;
-            self.depth = std::cmp::max(self.depth, depth);
             entry.ticks += 1;
             cframe = &mut entry.children;
         }
