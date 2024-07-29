@@ -1,8 +1,8 @@
 use std::sync::mpsc::{channel, Receiver, Sender};
 
-use eframe::{App, Frame};
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
+use eframe::{App, Frame};
 use egui::{Context, Style};
 
 use crate::flame_graph::FlameGraph;
@@ -29,7 +29,12 @@ impl App for JfrViewApp {
             .frame(Self::central_frame(&ctx.style()))
             .show(ctx, |ui| {
                 let (width, height) = (ui.available_width(), ui.available_height());
-                let parent_ticks: usize = self.flame_graph.frames.values().map(|v| v.ticks(self.include_native)).sum();
+                let parent_ticks: usize = self
+                    .flame_graph
+                    .frames
+                    .values()
+                    .map(|v| v.ticks(self.include_native))
+                    .sum();
                 let mut child_x = 0.0;
                 let frames: Vec<_> = self
                     .flame_graph
@@ -79,7 +84,8 @@ impl JfrViewApp {
         max_width: f32,
         max_height: f32,
     ) -> f32 {
-        let ratio = frame_info.frame.ticks(self.include_native) as f32 / frame_info.parent_ticks as f32;
+        let ratio =
+            frame_info.frame.ticks(self.include_native) as f32 / frame_info.parent_ticks as f32;
         assert!(ratio <= 1.0);
         let node_width = ratio * max_width;
         assert!(node_width > 0.0);
@@ -95,7 +101,11 @@ impl JfrViewApp {
             |h| Self::get_hover_color(frame_info.depth, h),
         );
         if hovered {
-            self.hovered = Some(format!("{:?} ({} samples)", frame_info.frame.method, frame_info.frame.ticks(self.include_native)));
+            self.hovered = Some(format!(
+                "{:?} ({} samples)",
+                frame_info.frame.method,
+                frame_info.frame.ticks(self.include_native)
+            ));
         }
 
         let mut child_x: f32 = frame_info.h_offset;
@@ -146,7 +156,12 @@ struct FrameInfo<'a> {
 }
 
 impl FrameInfo<'_> {
-    fn for_child<'a>(&self, other: &'a crate::flame_graph::Frame, include_native: bool, h_offset: f32) -> FrameInfo<'a> {
+    fn for_child<'a>(
+        &self,
+        other: &'a crate::flame_graph::Frame,
+        include_native: bool,
+        h_offset: f32,
+    ) -> FrameInfo<'a> {
         FrameInfo {
             frame: other,
             parent_ticks: self.frame.ticks(include_native),

@@ -27,7 +27,7 @@ impl From<Event<'_>> for ExecutionSample {
             start_time,
             thread,
             stack_trace,
-            native
+            native,
         };
     }
 }

@@ -1,14 +1,13 @@
 use indexmap::IndexMap;
 use jfrs::reader::JfrReader;
 
-use crate::data::{EXEC_SAMPLE, ExecutionSample, Method, NATIVE_EXEC_SAMPLE};
+use crate::data::{ExecutionSample, Method, EXEC_SAMPLE, NATIVE_EXEC_SAMPLE};
 use std::io::{Read, Seek};
 
 #[derive(Default, Debug)]
 pub struct FlameGraph {
     pub frames: IndexMap<Method, Frame>,
 }
-
 
 impl FlameGraph {
     pub fn new<T>(value: T) -> FlameGraph
@@ -21,9 +20,7 @@ impl FlameGraph {
         for (mut r, c) in reader.chunks().flatten() {
             r.events(&c)
                 .flatten()
-                .filter(|e| {
-                    e.class.name() == EXEC_SAMPLE || e.class.name() == NATIVE_EXEC_SAMPLE
-                })
+                .filter(|e| e.class.name() == EXEC_SAMPLE || e.class.name() == NATIVE_EXEC_SAMPLE)
                 .map(|e| ExecutionSample::from(e))
                 .filter(|e| !e.stack_trace.truncated)
                 .for_each(|s| fg.add_sample(s));

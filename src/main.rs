@@ -1,7 +1,7 @@
 use crate::ui::app::JfrViewApp;
-use eframe::{AppCreator};
-use std::{env, error::Error};
+use eframe::AppCreator;
 use egui::ViewportBuilder;
+use std::{env, error::Error};
 
 mod data;
 mod exec;
@@ -13,8 +13,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     use eframe::NativeOptions;
     env::set_var("RUST_BACKTRACE", "1");
     let opts = NativeOptions {
-        viewport: ViewportBuilder::default()
-            .with_drag_and_drop(true),
+        viewport: ViewportBuilder::default().with_drag_and_drop(true),
         ..Default::default()
     };
     eframe::run_native("JfrView", opts, create_app())?;

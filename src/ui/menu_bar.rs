@@ -1,9 +1,9 @@
-use std::io::Cursor;
-use egui::{Context, Id};
-use rfd::AsyncFileDialog;
 use crate::exec::exec;
 use crate::flame_graph::FlameGraph;
 use crate::ui::app::JfrViewApp;
+use egui::{Context, Id};
+use rfd::AsyncFileDialog;
+use std::io::Cursor;
 
 impl JfrViewApp {
     pub fn create_menubar(&mut self, ctx: &Context) {
@@ -17,7 +17,7 @@ impl JfrViewApp {
             });
         });
     }
-    
+
     fn pick_jfr_file(&self, ctx: &Context) {
         let sender = self.file_channel.0.clone();
         let ctx = ctx.clone();
