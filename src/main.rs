@@ -1,7 +1,9 @@
 use crate::ui::app::JfrViewApp;
 use eframe::AppCreator;
-use egui::ViewportBuilder;
-use std::{env, error::Error};
+use std::fs::File;
+#[cfg(not(target_arch = "wasm32"))]
+use std::error::Error;
+use crate::flame_graph::FlameGraph;
 
 mod data;
 mod exec;
@@ -10,14 +12,23 @@ mod ui;
 
 #[cfg(not(target_arch = "wasm32"))]
 fn main() -> Result<(), Box<dyn Error>> {
-    use eframe::NativeOptions;
+    use std::env;
     env::set_var("RUST_BACKTRACE", "1");
-    let opts = NativeOptions {
-        viewport: ViewportBuilder::default().with_drag_and_drop(true),
-        ..Default::default()
-    };
-    eframe::run_native("JfrView", opts, create_app())?;
+    let args: Vec<String> = env::args().collect::<Vec<_>>();
+    let arg = args.get(1);
+    let file = parse_jfr_arg(arg)?;
+    eframe::run_native("JfrView", Default::default(), create_app(file))?;
     Ok(())
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn parse_jfr_arg(input: Option<&String>) -> std::io::Result<Option<File>> {
+    if let Some(path_str) = input {
+        let file = File::open(path_str);
+        file.map(|f| Some(f))
+    } else {
+        Ok(None)
+    }
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -28,12 +39,16 @@ fn main() {
 
     wasm_bindgen_futures::spawn_local(async {
         WebRunner::new()
-            .start("canvas", Default::default(), create_app())
+            .start("canvas", Default::default(), create_app(None))
             .await
             .unwrap();
     });
 }
 
-fn create_app() -> AppCreator {
-    Box::new(|cc| Ok(Box::new(JfrViewApp::new(cc, Default::default()))))
+fn create_app(jfr_file: Option<File>) -> AppCreator {
+    let flame_graph: FlameGraph = match jfr_file {
+        Some(v) => FlameGraph::new(v),
+        None => FlameGraph::default()
+    };
+    Box::new(|cc| Ok(Box::new(JfrViewApp::new(cc, flame_graph))))
 }
