@@ -1,7 +1,7 @@
-use jfrs::reader::{
-    event::{Accessor, Event},
-    value_descriptor::ValueDescriptor,
-};
+use std::error::Error;
+use std::io::{Read, Seek};
+use jfrs::reader::{event::{Accessor, Event}, JfrReader, value_descriptor::ValueDescriptor};
+use log::warn;
 
 pub const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
 
@@ -14,6 +14,25 @@ pub struct ExecutionSample {
     pub thread: Thread,
     pub stack_trace: StackTrace,
     pub native: bool,
+}
+
+impl ExecutionSample {
+    pub fn visit_events<T: Read + Seek>(source: T, mut visitor: impl FnMut(ExecutionSample)) {
+        let mut reader = JfrReader::new(source);
+
+        for (mut r, c) in reader.chunks().filter_map(|cr| warn_error("read chunk", cr)) {
+            r.events(&c)
+                .filter_map(|er| warn_error("read event", er))
+                .filter(|e| e.class.name() == EXEC_SAMPLE || e.class.name() == NATIVE_EXEC_SAMPLE)
+                .map(|e| ExecutionSample::from(e))
+                .filter(|e| !e.stack_trace.truncated)
+                .for_each(|e| visitor(e));
+        }
+    }
+}
+
+fn warn_error<T>(msg: &'static str, result: Result<T, impl Error>) -> Option<T> {
+    result.inspect_err(|e| warn!("Unable to {msg}: {e}")).ok()
 }
 
 impl From<Event<'_>> for ExecutionSample {
