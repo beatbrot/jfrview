@@ -35,5 +35,5 @@ fn main() {
 }
 
 fn create_app() -> AppCreator {
-    Box::new(|_| Ok(Box::new(JfrViewApp::default())))
+    Box::new(|cc| Ok(Box::new(JfrViewApp::new(cc, Default::default()))))
 }

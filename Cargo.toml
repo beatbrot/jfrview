@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-eframe = { version = "0.28.1", default-features = false, features = ["glow", "default_fonts"] }
+eframe = { version = "0.28.1", default-features = false, features = ["glow"] }
 egui = { version = "0.28.1", default-features = false }
 indexmap = "2.2.6"
 jfrs = "0.2.5"

@@ -2,11 +2,12 @@ use std::sync::mpsc::{channel, Receiver, Sender};
 
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
-use eframe::{App, Frame};
+use eframe::{App, CreationContext, Frame};
 use egui::{Context, Style};
 
 use crate::flame_graph::FlameGraph;
 use crate::ui::block::{block, HEIGHT};
+use crate::ui::fonts::load_fonts;
 use crate::ui::theme;
 use crate::ui::theme::HOVER;
 
@@ -56,19 +57,9 @@ impl App for JfrViewApp {
     }
 }
 
-impl Default for JfrViewApp {
-    fn default() -> Self {
-        Self {
-            file_channel: channel(),
-            flame_graph: Default::default(),
-            include_native: false,
-            hovered: None,
-        }
-    }
-}
-
 impl JfrViewApp {
-    pub fn new(flame_graph: FlameGraph) -> Self {
+    pub fn new(cc: &CreationContext,flame_graph: FlameGraph) -> Self {
+       cc.egui_ctx.set_fonts(load_fonts());
         Self {
             file_channel: channel(),
             flame_graph,
