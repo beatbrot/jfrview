@@ -12,7 +12,7 @@ rfd =  "0.14.1"
 
 # desktop:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-async-std =  "1.12.0"
+futures = "0.3.30"
 
 # web:
 [target.'cfg(target_arch = "wasm32")'.dependencies]
@@ -22,7 +22,8 @@ log = "0.4.22"
 [profile.release]
 opt-level = "s"
 strip = true
-lto = "thin"
+lto = true
+codegen-units = 1
 
 # Optimize all dependencies even in debug builds:
 [profile.dev.package."*"]

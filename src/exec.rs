@@ -15,5 +15,5 @@ pub fn exec<F>(code: F)
 where
     F: Future<Output = ()> + 'static,
 {
-    async_std::task::block_on(code);
+    futures::executor::block_on(code);
 }
