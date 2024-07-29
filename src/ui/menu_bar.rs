@@ -21,12 +21,11 @@ impl JfrViewApp {
     fn pick_jfr_file(&self, ctx: &Context) {
         let sender = self.file_channel.0.clone();
         let ctx = ctx.clone();
-        let native = self.include_native;
         exec(async move {
             if let Some(path) = AsyncFileDialog::new().pick_file().await {
                 let bytes = path.read().await;
                 let cursor = Cursor::new(bytes);
-                sender.send(FlameGraph::new(cursor, native)).unwrap();
+                sender.send(FlameGraph::new(cursor)).unwrap();
                 ctx.request_repaint();
             }
         });

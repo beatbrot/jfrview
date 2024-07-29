@@ -1,7 +1,7 @@
 use indexmap::IndexMap;
 use jfrs::reader::JfrReader;
 
-use crate::data::{ExecutionSample, Method};
+use crate::data::{EXEC_SAMPLE, ExecutionSample, Method, NATIVE_EXEC_SAMPLE};
 use std::io::{Read, Seek};
 
 #[derive(Default, Debug)]
@@ -9,11 +9,9 @@ pub struct FlameGraph {
     pub frames: IndexMap<Method, Frame>,
 }
 
-const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
-const NATIVE_EXEC_SAMPLE: &str = "jdk.NativeMethodSample";
 
 impl FlameGraph {
-    pub fn new<T>(value: T, include_native: bool) -> FlameGraph
+    pub fn new<T>(value: T) -> FlameGraph
     where
         T: Read + Seek,
     {
@@ -24,8 +22,7 @@ impl FlameGraph {
             r.events(&c)
                 .flatten()
                 .filter(|e| {
-                    e.class.name() == EXEC_SAMPLE
-                        || (include_native && e.class.name() == NATIVE_EXEC_SAMPLE)
+                    e.class.name() == EXEC_SAMPLE || e.class.name() == NATIVE_EXEC_SAMPLE
                 })
                 .map(|e| ExecutionSample::from(e))
                 .filter(|e| !e.stack_trace.truncated)
@@ -38,7 +35,8 @@ impl FlameGraph {
 #[derive(Debug, Clone)]
 pub struct Frame {
     pub method: Method,
-    pub ticks: usize,
+    jvm_ticks: usize,
+    native_ticks: usize,
     pub children: IndexMap<Method, Frame>,
 }
 
@@ -46,8 +44,29 @@ impl Frame {
     fn new(method: Method) -> Self {
         Self {
             method,
-            ticks: Default::default(),
+            jvm_ticks: Default::default(),
+            native_ticks: Default::default(),
             children: Default::default(),
+        }
+    }
+
+    pub fn has_no_samples(&self, include_native: bool) -> bool {
+        self.ticks(include_native) == 0
+    }
+
+    pub fn ticks(&self, include_native: bool) -> usize {
+        return if include_native {
+            self.jvm_ticks + self.native_ticks
+        } else {
+            self.jvm_ticks
+        };
+    }
+
+    fn add_ticks(&mut self, include_native: bool, ticks: usize) {
+        if include_native {
+            self.native_ticks += ticks;
+        } else {
+            self.jvm_ticks += ticks;
         }
     }
 }
@@ -59,7 +78,7 @@ impl FlameGraph {
             let entry = cframe
                 .entry(frame.method.clone())
                 .or_insert_with(|| Frame::new(frame.method.clone()));
-            entry.ticks += 1;
+            entry.add_ticks(sample.native, 1);
             cframe = &mut entry.children;
         }
     }
@@ -73,7 +92,7 @@ impl std::fmt::Display for FlameGraph {
             mt: &Method,
             frame: &Frame,
         ) -> std::fmt::Result {
-            writeln!(f, "{}{:?}: {}", "| ".repeat(indent), mt, frame.ticks)?;
+            writeln!(f, "{}{:?}: {}", "| ".repeat(indent), mt, frame.jvm_ticks)?;
             for (k, v) in &frame.children {
                 printer(f, indent + 1, k, v)?;
             }

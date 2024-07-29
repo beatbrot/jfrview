@@ -29,7 +29,7 @@ impl App for JfrViewApp {
             .frame(Self::central_frame(&ctx.style()))
             .show(ctx, |ui| {
                 let (width, height) = (ui.available_width(), ui.available_height());
-                let parent_ticks: usize = self.flame_graph.frames.values().map(|v| v.ticks).sum();
+                let parent_ticks: usize = self.flame_graph.frames.values().map(|v| v.ticks(self.include_native)).sum();
                 let mut child_x = 0.0;
                 let frames: Vec<_> = self
                     .flame_graph
@@ -79,9 +79,10 @@ impl JfrViewApp {
         max_width: f32,
         max_height: f32,
     ) -> f32 {
-        assert!((frame_info.frame.ticks as f32 / frame_info.parent_ticks as f32) <= 1.0);
-        let node_width =
-            (frame_info.frame.ticks as f32 / frame_info.parent_ticks as f32) * max_width;
+        let ratio = frame_info.frame.ticks(self.include_native) as f32 / frame_info.parent_ticks as f32;
+        assert!(ratio <= 1.0);
+        let node_width = ratio * max_width;
+        assert!(node_width > 0.0);
         let y = max_height - (frame_info.depth as f32 * HEIGHT);
         if y < 0.0 {
             return 0.0;
@@ -94,13 +95,16 @@ impl JfrViewApp {
             |h| Self::get_hover_color(frame_info.depth, h),
         );
         if hovered {
-            self.hovered = Some(format!("{:?} ({} samples)", frame_info.frame.method, frame_info.frame.ticks));
+            self.hovered = Some(format!("{:?} ({} samples)", frame_info.frame.method, frame_info.frame.ticks(self.include_native)));
         }
 
         let mut child_x: f32 = frame_info.h_offset;
         for ele in frame_info.frame.children.values() {
-            assert!(ele.ticks <= frame_info.frame.ticks);
-            let fi = frame_info.for_child(ele, child_x);
+            if ele.has_no_samples(self.include_native) {
+                continue;
+            }
+            assert!(ele.ticks(self.include_native) <= frame_info.frame.ticks(self.include_native));
+            let fi = frame_info.for_child(ele, self.include_native, child_x);
             child_x += self.draw_node(ui, &fi, node_width, max_height);
         }
         assert!(node_width > 0.0);
@@ -142,10 +146,10 @@ struct FrameInfo<'a> {
 }
 
 impl FrameInfo<'_> {
-    fn for_child<'a>(&self, other: &'a crate::flame_graph::Frame, h_offset: f32) -> FrameInfo<'a> {
+    fn for_child<'a>(&self, other: &'a crate::flame_graph::Frame, include_native: bool, h_offset: f32) -> FrameInfo<'a> {
         FrameInfo {
             frame: other,
-            parent_ticks: self.frame.ticks,
+            parent_ticks: self.frame.ticks(include_native),
             h_offset,
             depth: self.depth + 1,
         }

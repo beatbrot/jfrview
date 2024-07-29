@@ -3,16 +3,22 @@ use jfrs::reader::{
     value_descriptor::ValueDescriptor,
 };
 
+pub const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
+
+pub const NATIVE_EXEC_SAMPLE: &str = "jdk.NativeMethodSample";
+
 #[derive(Debug)]
 #[allow(dead_code)]
 pub struct ExecutionSample {
     pub start_time: i64,
     pub thread: Thread,
     pub stack_trace: StackTrace,
+    pub native: bool,
 }
 
 impl From<Event<'_>> for ExecutionSample {
     fn from(value: Event) -> Self {
+        let native = value.class.name() == NATIVE_EXEC_SAMPLE;
         let v = value.value();
         let start_time: i64 = extract_primitive(&v, "startTime");
         let thread: Thread = value.value().get_field("sampledThread").unwrap().into();
@@ -21,6 +27,7 @@ impl From<Event<'_>> for ExecutionSample {
             start_time,
             thread,
             stack_trace,
+            native
         };
     }
 }
