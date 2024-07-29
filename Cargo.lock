@@ -1297,7 +1297,6 @@ dependencies = [
  "indexmap",
  "jfrs",
  "log",
- "once_cell",
  "rfd",
  "wasm-bindgen-futures",
 ]

@@ -8,8 +8,7 @@ eframe = { version = "0.28.1", default-features = false, features = ["glow", "de
 egui = { version = "0.28.1", default-features = false }
 indexmap = "2.2.6"
 jfrs = "0.2.5"
-once_cell = "1.19.0"
-rfd = { version = "0.14.1", features = ["file-handle-inner"] }
+rfd =  "0.14.1"
 
 # desktop:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]

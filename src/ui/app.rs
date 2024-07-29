@@ -135,7 +135,7 @@ impl JfrViewApp {
 
     fn get_hover_color(index: usize, hover: bool) -> Color32 {
         if hover {
-            HOVER.to_owned()
+            (&HOVER).into()
         } else {
             theme::pick_green(index)
         }

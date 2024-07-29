@@ -1,4 +1,4 @@
-use egui::{pos2, vec2, Align2, Color32, Id, Pos2, Rect, Ui};
+use egui::{Align2, Color32, pos2, Pos2, Rect, Ui, vec2};
 
 use crate::ui::theme::FONT;
 
@@ -23,8 +23,7 @@ pub fn block(
 
     let hovered = hover_pos.map(|p| rect.contains(p)).unwrap_or(false);
     if hovered {
-        render_hover(ui);
-        ui.data_mut(|d| d.insert_temp(Id::new("hovered_method"), text.clone()));
+        change_pointer(ui);
     }
 
     ui.painter().rect_filled(rect, 0.0, color(hovered));
@@ -54,6 +53,6 @@ fn trim_text(width: f32, text: String) -> String {
     }
 }
 
-fn render_hover(ui: &mut Ui) {
+fn change_pointer(ui: &mut Ui) {
     ui.output_mut(|o| o.cursor_icon = egui::CursorIcon::PointingHand);
 }
