@@ -2,14 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JfrView</title>
     <style>
-        body{
-            margin: 0 0;
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+        canvas{
+            display: block;
+            width: 100vw;
+            height: 100vh;
         }
     </style>
 </head>
 <body>
-<canvas style="width: 100%; height: 100%" id="canvas"></canvas>
+<canvas id="canvas"></canvas>
 </body>
 </html>
