@@ -1,9 +1,9 @@
 use std::sync::mpsc::{channel, Receiver, Sender};
 
+use eframe::{App, CreationContext, Frame};
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
-use eframe::{App, CreationContext, Frame};
-use egui::{Context, Style};
+use egui::{Context, Id, Style};
 
 use crate::flame_graph::FlameGraph;
 use crate::ui::block::{block, HEIGHT};
@@ -20,16 +20,21 @@ pub struct JfrViewApp {
 
 impl App for JfrViewApp {
     fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
-        self.hovered = None;
         if let Ok(fg) = self.file_channel.1.try_recv() {
             self.flame_graph = fg;
         }
 
         self.create_menubar(ctx);
+        egui::TopBottomPanel::bottom(Id::new("bottom"))
+            .show(&ctx, |ui| {
+                self.draw_hover_info(ui);
+            });
+        self.hovered = None;
+
         egui::CentralPanel::default()
             .frame(Self::central_frame(&ctx.style()))
             .show(ctx, |ui| {
-                let (width, height) = (ui.available_width(), ui.available_height());
+                let (width, height) = (ui.available_width(), ui.available_height() + 22.0);
                 let parent_ticks: usize = self
                     .flame_graph
                     .frames
@@ -52,14 +57,13 @@ impl App for JfrViewApp {
                     };
                     child_x += self.draw_node(ui, &fi, width, height);
                 }
-                self.draw_hover_info(ui, height);
             });
     }
 }
 
 impl JfrViewApp {
-    pub fn new(cc: &CreationContext,flame_graph: FlameGraph) -> Self {
-       cc.egui_ctx.set_fonts(load_fonts());
+    pub fn new(cc: &CreationContext, flame_graph: FlameGraph) -> Self {
+        cc.egui_ctx.set_fonts(load_fonts());
         Self {
             file_channel: channel(),
             flame_graph,
@@ -112,15 +116,9 @@ impl JfrViewApp {
         return node_width;
     }
 
-    fn draw_hover_info(&self, ui: &mut egui::Ui, max_height: f32) {
+    fn draw_hover_info(&self, ui: &mut egui::Ui) {
         if let Some(method) = &self.hovered {
-            ui.painter().text(
-                pos2(0.0, max_height),
-                egui::Align2::LEFT_TOP,
-                method,
-                theme::FONT,
-                Color32::GRAY,
-            );
+            ui.colored_label(Color32::GRAY, method);
         }
     }
 

@@ -17,7 +17,7 @@ pub fn block(
     assert!(width > 0.0);
 
     // White vertical border of 1px
-    let rect = Rect::from_min_size(pos, vec2(width, HEIGHT)).expand2(vec2(0.0, -1.0));
+    let rect = Rect::from_two_pos(pos, pos2(pos.x + width, pos.y + HEIGHT - 1.0));
 
     let hover_pos: Option<Pos2> = ui.input(|i| i.pointer.hover_pos());
 
