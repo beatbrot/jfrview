@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::io::{Read, Seek};
 use jfrs::reader::{event::{Accessor, Event}, JfrReader, value_descriptor::ValueDescriptor};
-use log::warn;
+use log::{debug, warn};
 
 pub const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
 
@@ -21,6 +21,7 @@ impl ExecutionSample {
         let mut reader = JfrReader::new(source);
 
         for (mut r, c) in reader.chunks().filter_map(|cr| warn_error("read chunk", cr)) {
+            debug!("Parsing chunk with size {}", c.header.chunk_size);
             r.events(&c)
                 .filter_map(|er| warn_error("read event", er))
                 .filter(|e| e.class.name() == EXEC_SAMPLE || e.class.name() == NATIVE_EXEC_SAMPLE)
@@ -133,7 +134,7 @@ pub struct Method {
 
 impl std::fmt::Debug for Method {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}:{}", self.class.short_name(), self.name)
+        write!(f, "{}:{}", self.class.pretty_name(), self.name)
     }
 }
 
@@ -152,23 +153,8 @@ pub struct Class {
 }
 
 impl Class {
-    pub fn short_name(&self) -> String {
-        let segments: Vec<&str> = self.name.split('/').collect();
-        let mut result = String::new();
-
-        for (i, segment) in segments.iter().enumerate() {
-            if i != 0 {
-                result.push('/');
-            }
-
-            if i == segments.len() - 1 {
-                result.push_str(segment);
-            } else if !segment.is_empty() {
-                result.push(segment.chars().next().unwrap());
-            }
-        }
-
-        return result;
+    pub fn pretty_name(&self) -> String {
+        self.name.replace('/', ".")
     }
 }
 
