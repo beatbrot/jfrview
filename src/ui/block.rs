@@ -1,41 +1,56 @@
-use egui::{Align2, Color32, pos2, Pos2, Rect, Ui, vec2};
+use egui::{Align2, Color32, CursorIcon, pos2, Pos2, Rect, Response, Sense, Ui, Widget};
 
 use crate::ui::theme::FONT;
 
 pub const HEIGHT: f32 = 15.0;
 
-/// Returns a boolean indicating whether the block is hovered
-pub fn block(
-    ui: &mut Ui,
+pub struct Block<T: FnOnce(bool) -> Color32> {
     pos: Pos2,
     width: f32,
     text: String,
-    color: impl FnOnce(bool) -> Color32,
-) -> bool {
-    assert!(pos.x >= 0.0);
-    assert!(pos.y >= 0.0);
-    assert!(width > 0.0);
+    color: T,
+}
 
-    // White vertical border of 1px
-    let rect = Rect::from_two_pos(pos, pos2(pos.x + width, pos.y + HEIGHT - 1.0));
-
-    let hover_pos: Option<Pos2> = ui.input(|i| i.pointer.hover_pos());
-
-    let hovered = hover_pos.map(|p| rect.contains(p)).unwrap_or(false);
-    if hovered {
-        change_pointer(ui);
+impl<T: FnOnce(bool) -> Color32> Block<T> {
+    pub fn new(pos: Pos2, width: f32, text: String, color: T) -> Self {
+        assert!(pos.x >= 0.0);
+        assert!(pos.y >= 0.0);
+        assert!(width > 0.0);
+        Self {
+            pos,
+            width,
+            text,
+            color,
+        }
     }
+}
 
-    ui.painter().rect_filled(rect, 0.0, color(hovered));
+impl<T: FnOnce(bool) -> Color32> Widget for Block<T> {
+    fn ui(self, ui: &mut Ui) -> Response {
+        let pos = self.pos;
 
-    ui.painter().text(
-        pos2(pos.x + 2.0, pos.y + 1.0),
-        Align2::LEFT_TOP,
-        trim_text(width, text),
-        FONT,
-        Color32::BLACK,
-    );
-    hovered
+        // White vertical border of 1px
+        let rect = Rect::from_two_pos(pos, pos2(pos.x + self.width, pos.y + HEIGHT - 1.0));
+        let res = ui.allocate_rect(rect, Sense::hover());
+
+        let hover_pos: Option<Pos2> = ui.input(|i| i.pointer.hover_pos());
+
+        let hovered = hover_pos.map(|p| rect.contains(p)).unwrap_or(false);
+        if res.hovered() {
+            ui.ctx().set_cursor_icon(CursorIcon::PointingHand);
+        }
+
+        ui.painter().rect_filled(rect, 0.0, (self.color)(hovered));
+
+        ui.painter().text(
+            pos2(pos.x + 2.0, pos.y + 1.0),
+            Align2::LEFT_TOP,
+            trim_text(self.width, self.text),
+            FONT,
+            Color32::BLACK,
+        );
+        res
+    }
 }
 
 fn trim_text(width: f32, text: String) -> String {
@@ -51,8 +66,4 @@ fn trim_text(width: f32, text: String) -> String {
     } else {
         String::new()
     }
-}
-
-fn change_pointer(ui: &mut Ui) {
-    ui.output_mut(|o| o.cursor_icon = egui::CursorIcon::PointingHand);
 }

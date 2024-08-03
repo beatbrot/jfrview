@@ -1,12 +1,12 @@
 use std::sync::mpsc::{channel, Receiver, Sender};
 
-use eframe::{App, CreationContext, Frame};
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
-use egui::{Context, Id, Style};
+use eframe::{App, CreationContext, Frame};
+use egui::{Context, Id, Response, ScrollArea, Style};
 
 use crate::flame_graph::FlameGraph;
-use crate::ui::block::{block, HEIGHT};
+use crate::ui::block::{Block, HEIGHT};
 use crate::ui::fonts::load_fonts;
 use crate::ui::theme;
 use crate::ui::theme::HOVER;
@@ -25,38 +25,39 @@ impl App for JfrViewApp {
         }
 
         self.create_menubar(ctx);
-        egui::TopBottomPanel::bottom(Id::new("bottom"))
-            .show(&ctx, |ui| {
-                self.draw_hover_info(ui);
-            });
+        egui::TopBottomPanel::bottom(Id::new("bottom")).show(&ctx, |ui| {
+            self.draw_hover_info(ui);
+        });
         self.hovered = None;
 
         egui::CentralPanel::default()
             .frame(Self::central_frame(&ctx.style()))
             .show(ctx, |ui| {
                 let (width, height) = (ui.available_width(), ui.available_height() + 22.0);
-                let parent_ticks: usize = self
-                    .flame_graph
-                    .frames
-                    .values()
-                    .map(|v| v.ticks(self.include_native))
-                    .sum();
-                let mut child_x = 0.0;
-                let frames: Vec<_> = self
-                    .flame_graph
-                    .frames
-                    .values()
-                    .map(|v| v.to_owned())
-                    .collect();
-                for child in frames {
-                    let fi: FrameInfo = FrameInfo {
-                        frame: &child,
-                        depth: 1,
-                        h_offset: child_x,
-                        parent_ticks,
-                    };
-                    child_x += self.draw_node(ui, &fi, width, height);
-                }
+                ScrollArea::vertical().show_viewport(ui, |ui, vp| {
+                    let parent_ticks: usize = self
+                        .flame_graph
+                        .frames
+                        .values()
+                        .map(|v| v.ticks(self.include_native))
+                        .sum();
+                    let mut child_x = 0.0;
+                    let frames: Vec<_> = self
+                        .flame_graph
+                        .frames
+                        .values()
+                        .map(|v| v.to_owned())
+                        .collect();
+                    for child in frames {
+                        let fi: FrameInfo = FrameInfo {
+                            frame: &child,
+                            depth: 1,
+                            h_offset: child_x,
+                            parent_ticks,
+                        };
+                        child_x += self.draw_node(ui, &fi, width, height);
+                    }
+                });
             });
     }
 }
@@ -88,14 +89,13 @@ impl JfrViewApp {
         if y < 0.0 {
             return 0.0;
         }
-        let hovered = block(
-            ui,
+        let response = ui.add(Block::new(
             pos2(frame_info.h_offset, y),
             node_width,
             format!("{:?}", frame_info.frame.method),
             |h| Self::get_hover_color(frame_info.depth, h),
-        );
-        if hovered {
+        ));
+        if response.hovered() {
             self.hovered = Some(format!(
                 "{:?} ({} samples)",
                 frame_info.frame.method,
