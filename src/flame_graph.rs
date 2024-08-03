@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::io::{Read, Seek};
 
 use indexmap::IndexMap;
@@ -6,6 +7,7 @@ use crate::data::{ExecutionSample, Method};
 
 #[derive(Default, Debug)]
 pub struct FlameGraph {
+    pub depth: usize,
     pub frames: IndexMap<Method, Frame>,
 }
 
@@ -62,6 +64,8 @@ impl Frame {
 impl FlameGraph {
     pub fn add_sample(&mut self, sample: ExecutionSample) {
         let mut cframe = &mut self.frames;
+        let num_frames = sample.stack_trace.frames.len();
+        self.depth = max(self.depth, num_frames);
         for frame in sample.stack_trace.frames {
             let entry = cframe
                 .entry(frame.method.clone())
