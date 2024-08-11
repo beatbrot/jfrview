@@ -3,7 +3,7 @@ use std::sync::mpsc::{channel, Receiver, Sender};
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
 use eframe::{App, CreationContext, Frame};
-use egui::{Context, Id, Response, ScrollArea, Style};
+use egui::{Context, Id, Rect, ScrollArea, Style};
 
 use crate::flame_graph::FlameGraph;
 use crate::ui::block::{Block, HEIGHT};
@@ -33,8 +33,9 @@ impl App for JfrViewApp {
         egui::CentralPanel::default()
             .frame(Self::central_frame(&ctx.style()))
             .show(ctx, |ui| {
-                let (width, height) = (ui.available_width(), ui.available_height() + 22.0);
                 ScrollArea::vertical().show_viewport(ui, |ui, vp| {
+                    let width = ui.available_width();
+                    let height = f32_max(vp.height() + 20.0, self.flame_graph.depth as f32 * HEIGHT);
                     let parent_ticks: usize = self
                         .flame_graph
                         .frames
@@ -55,10 +56,18 @@ impl App for JfrViewApp {
                             h_offset: child_x,
                             parent_ticks,
                         };
-                        child_x += self.draw_node(ui, &fi, width, height);
+                        child_x += self.draw_node(ui, &fi, width, height, &vp);
                     }
                 });
             });
+    }
+}
+
+fn f32_max(a: f32, b: f32) -> f32 {
+    if a < b {
+        b
+    } else {
+        a
     }
 }
 
@@ -79,13 +88,15 @@ impl JfrViewApp {
         frame_info: &FrameInfo,
         max_width: f32,
         max_height: f32,
+        viewport: &Rect,
     ) -> f32 {
+        let offset = viewport.min.y;
         let ratio =
             frame_info.frame.ticks(self.include_native) as f32 / frame_info.parent_ticks as f32;
         assert!(ratio <= 1.0);
         let node_width = ratio * max_width;
         assert!(node_width > 0.0);
-        let y = max_height - (frame_info.depth as f32 * HEIGHT);
+        let y = (max_height - (frame_info.depth as f32 * HEIGHT)) - offset;
         if y < 0.0 {
             return 0.0;
         }
@@ -110,7 +121,7 @@ impl JfrViewApp {
             }
             assert!(ele.ticks(self.include_native) <= frame_info.frame.ticks(self.include_native));
             let fi = frame_info.for_child(ele, self.include_native, child_x);
-            child_x += self.draw_node(ui, &fi, node_width, max_height);
+            child_x += self.draw_node(ui, &fi, node_width, max_height, viewport);
         }
         assert!(node_width > 0.0);
         return node_width;
