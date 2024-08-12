@@ -25,7 +25,7 @@ impl JfrViewApp {
             if let Some(path) = AsyncFileDialog::new().pick_file().await {
                 let bytes = path.read().await;
                 let cursor = Cursor::new(bytes);
-                sender.send(FlameGraph::new(cursor)).unwrap();
+                sender.send(FlameGraph::try_new(cursor).unwrap()).unwrap();
                 ctx.request_repaint();
             }
         });

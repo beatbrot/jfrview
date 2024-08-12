@@ -1,7 +1,7 @@
-use std::error::Error;
 use std::io::{Read, Seek};
+use anyhow::{Context};
 use jfrs::reader::{event::{Accessor, Event}, JfrReader, value_descriptor::ValueDescriptor};
-use log::{debug, warn};
+use log::{debug};
 
 pub const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
 
@@ -17,23 +17,22 @@ pub struct ExecutionSample {
 }
 
 impl ExecutionSample {
-    pub fn visit_events<T: Read + Seek>(source: T, mut visitor: impl FnMut(ExecutionSample)) {
+    pub fn visit_events<T: Read + Seek>(source: T, mut visitor: impl FnMut(ExecutionSample)) -> anyhow::Result<()> {
         let mut reader = JfrReader::new(source);
 
-        for (mut r, c) in reader.chunks().filter_map(|cr| warn_error("read chunk", cr)) {
+        for result in reader.chunks() {
+            let (mut r, c) = result.with_context(|| "Unable to parse chunk.")?;
             debug!("Parsing chunk with size {}", c.header.chunk_size);
-            r.events(&c)
-                .filter_map(|er| warn_error("read event", er))
-                .filter(|e| e.class.name() == EXEC_SAMPLE || e.class.name() == NATIVE_EXEC_SAMPLE)
-                .map(|e| ExecutionSample::from(e))
-                .filter(|e| !e.stack_trace.truncated)
-                .for_each(|e| visitor(e));
+            for event_res in r.events(&c) {
+                let event = event_res.with_context(|| "Unable to parse event.")?;
+                if event.class.name() == EXEC_SAMPLE || event.class.name() == NATIVE_EXEC_SAMPLE {
+                    visitor(ExecutionSample::from(event));
+                }
+            }
         }
-    }
-}
 
-fn warn_error<T>(msg: &'static str, result: Result<T, impl Error>) -> Option<T> {
-    result.inspect_err(|e| warn!("Unable to {msg}: {e}")).ok()
+        Ok(())
+    }
 }
 
 impl From<Event<'_>> for ExecutionSample {
@@ -43,12 +42,12 @@ impl From<Event<'_>> for ExecutionSample {
         let start_time: i64 = extract_primitive(&v, "startTime");
         let thread: Thread = value.value().get_field("sampledThread").unwrap().into();
         let stack_trace: StackTrace = value.value().get_field("stackTrace").unwrap().into();
-        return Self {
+        Self {
             start_time,
             thread,
             stack_trace,
             native,
-        };
+        }
     }
 }
 
@@ -63,10 +62,10 @@ impl From<Accessor<'_>> for Thread {
     fn from(value: Accessor<'_>) -> Self {
         let java_name = extract_primitive::<&str>(&value, "javaName").to_string();
         let java_thread_id: i64 = extract_primitive(&value, "javaThreadId");
-        return Thread {
+        Thread {
             java_name,
             java_thread_id,
-        };
+        }
     }
 }
 
@@ -95,7 +94,7 @@ impl From<Accessor<'_>> for StackTrace {
             .collect();
         frames.reverse();
 
-        return Self { truncated, frames };
+        Self { truncated, frames }
     }
 }
 
@@ -111,11 +110,11 @@ impl From<Accessor<'_>> for StackFrame {
         let bytecode_index: i32 = extract_primitive(&value, "bytecodeIndex");
         let line_number: i32 = extract_primitive(&value, "lineNumber");
         let method: Method = value.get_field("method").map(|v| v.into()).unwrap();
-        return Self {
+        Self {
             method,
             line_number,
             bytecode_index,
-        };
+        }
     }
 }
 
@@ -166,22 +165,21 @@ impl std::fmt::Display for Class {
 
 impl From<Accessor<'_>> for Class {
     fn from(value: Accessor<'_>) -> Self {
-        let name = extract_symbol(&value, "name");
-        return Self { name };
+        Self { name: extract_symbol(&value, "name") }
     }
 }
 
 fn extract_symbol(value: &Accessor, name: &str) -> String {
     let str: &str = extract_primitive(&value.get_field(name).unwrap(), "string");
-    return str.to_string();
+    str.to_string()
 }
 
 fn extract_primitive<'a, T>(value: &Accessor<'a>, name: &str) -> T
 where
     T: TryFrom<&'a ValueDescriptor>,
 {
-    return value
+    value
         .get_field(name)
         .and_then(|v| <T>::try_from(v.value).ok())
-        .unwrap();
+        .unwrap()
 }

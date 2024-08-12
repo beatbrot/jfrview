@@ -12,15 +12,17 @@ pub struct FlameGraph {
 }
 
 impl FlameGraph {
-    pub fn new<T>(value: T) -> FlameGraph
+    pub fn try_new<T>(value: T) -> anyhow::Result<FlameGraph>
     where
         T: Read + Seek,
     {
         let mut fg = FlameGraph::default();
-        ExecutionSample::visit_events(value, |e| fg.add_sample(e));
-        fg
+        ExecutionSample::visit_events(value, |e| {
+            fg.add_sample(e)
+        })?;
+        Ok(fg)
     }
-    
+
     pub fn ticks(&self, include_native: bool) -> usize {
         self.frames.values()
             .map(|v| v.ticks(include_native))
@@ -90,7 +92,7 @@ impl std::fmt::Display for FlameGraph {
             mt: &Method,
             frame: &Frame,
         ) -> std::fmt::Result {
-            writeln!(f, "{}{:?}: {}", "| ".repeat(indent), mt, frame.jvm_ticks)?;
+            writeln!(f, "{}{:?}: ({},{})", "| ".repeat(indent), mt, frame.jvm_ticks, frame.native_ticks)?;
             for (k, v) in &frame.children {
                 printer(f, indent + 1, k, v)?;
             }
@@ -99,6 +101,34 @@ impl std::fmt::Display for FlameGraph {
         for (k, v) in &self.frames {
             printer(f, 0, k, v)?;
         }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs::File;
+    use insta::{assert_snapshot, glob};
+    use crate::flame_graph::FlameGraph;
+
+    #[test]
+    fn parse_without_panic() {
+        glob!("../test-data","*.jfr", |path| {
+        let f = File::open(path).unwrap();
+        let flame_graph = FlameGraph::try_new(f);
+        insta::with_settings!({
+            omit_expression => true,
+            description => path.file_name().unwrap().to_string_lossy()
+        }, {
+            assert_snapshot!(flame_graph.unwrap());
+        });
+        });
+    }
+
+    #[test]
+    fn test_invalid() -> anyhow::Result<()> {
+        let file = File::open("test-data/invalid.jfr.fail")?;
+        assert!(FlameGraph::try_new(file).is_err());
         Ok(())
     }
 }

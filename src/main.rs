@@ -47,7 +47,7 @@ fn main() {
 
 fn create_app(jfr_file: Option<File>) -> AppCreator {
     let flame_graph: FlameGraph = match jfr_file {
-        Some(v) => FlameGraph::new(v),
+        Some(v) => FlameGraph::try_new(v).unwrap(),
         None => FlameGraph::default()
     };
     Box::new(|cc| Ok(Box::new(JfrViewApp::new(cc, flame_graph))))
