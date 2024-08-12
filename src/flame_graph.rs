@@ -20,6 +20,12 @@ impl FlameGraph {
         ExecutionSample::visit_events(value, |e| fg.add_sample(e));
         fg
     }
+    
+    pub fn ticks(&self, include_native: bool) -> usize {
+        self.frames.values()
+            .map(|v| v.ticks(include_native))
+            .sum()
+    }
 }
 
 #[derive(Debug, Clone)]

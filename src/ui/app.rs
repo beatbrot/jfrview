@@ -3,11 +3,12 @@ use std::sync::mpsc::{channel, Receiver, Sender};
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
 use eframe::{App, CreationContext, Frame};
-use egui::{Context, Id, Rect, ScrollArea, Style};
+use egui::{Context, Id, ScrollArea, Style};
 
 use crate::flame_graph::FlameGraph;
 use crate::ui::block::{Block, HEIGHT};
 use crate::ui::fonts::load_fonts;
+use crate::ui::ui_frame::UiFrame;
 use crate::ui::theme;
 use crate::ui::theme::HOVER;
 
@@ -34,14 +35,9 @@ impl App for JfrViewApp {
             .frame(Self::central_frame(&ctx.style()))
             .show(ctx, |ui| {
                 ScrollArea::vertical().show_viewport(ui, |ui, vp| {
+                    let uf = UiFrame::new(ui, &vp, self.flame_graph.depth as f32 * HEIGHT);
                     let width = ui.available_width();
-                    let height = f32_max(vp.height() + 20.0, self.flame_graph.depth as f32 * HEIGHT);
-                    let parent_ticks: usize = self
-                        .flame_graph
-                        .frames
-                        .values()
-                        .map(|v| v.ticks(self.include_native))
-                        .sum();
+                    let parent_ticks = self.flame_graph.ticks(self.include_native);
                     let mut child_x = 0.0;
                     let frames: Vec<_> = self
                         .flame_graph
@@ -50,24 +46,16 @@ impl App for JfrViewApp {
                         .map(|v| v.to_owned())
                         .collect();
                     for child in frames {
-                        let fi: FrameInfo = FrameInfo {
+                        let fi: StackFrameInfo = StackFrameInfo {
                             frame: &child,
                             depth: 1,
                             h_offset: child_x,
                             parent_ticks,
                         };
-                        child_x += self.draw_node(ui, &fi, width, height, &vp);
+                        child_x += self.draw_node(ui, &fi, width, &uf);
                     }
                 });
             });
-    }
-}
-
-fn f32_max(a: f32, b: f32) -> f32 {
-    if a < b {
-        b
-    } else {
-        a
     }
 }
 
@@ -85,18 +73,13 @@ impl JfrViewApp {
     fn draw_node(
         &mut self,
         ui: &mut egui::Ui,
-        frame_info: &FrameInfo,
+        frame_info: &StackFrameInfo,
         max_width: f32,
-        max_height: f32,
-        viewport: &Rect,
+        uf: &UiFrame,
     ) -> f32 {
-        let offset = viewport.min.y;
-        let ratio =
-            frame_info.frame.ticks(self.include_native) as f32 / frame_info.parent_ticks as f32;
-        assert!(ratio <= 1.0);
-        let node_width = ratio * max_width;
+        let node_width = frame_info.ratio(self.include_native) * max_width;
         assert!(node_width > 0.0);
-        let y = (max_height - (frame_info.depth as f32 * HEIGHT)) - offset;
+        let y = uf.pos_from_bottom(((frame_info.depth - 1) as f32) * HEIGHT);
         if y < 0.0 {
             return 0.0;
         }
@@ -121,10 +104,10 @@ impl JfrViewApp {
             }
             assert!(ele.ticks(self.include_native) <= frame_info.frame.ticks(self.include_native));
             let fi = frame_info.for_child(ele, self.include_native, child_x);
-            child_x += self.draw_node(ui, &fi, node_width, max_height, viewport);
+            child_x += self.draw_node(ui, &fi, node_width, uf);
         }
         assert!(node_width > 0.0);
-        return node_width;
+        node_width
     }
 
     fn draw_hover_info(&self, ui: &mut egui::Ui) {
@@ -148,21 +131,28 @@ impl JfrViewApp {
     }
 }
 
-struct FrameInfo<'a> {
+/// Information on how to render a [crate::flame_graph::Frame].
+struct StackFrameInfo<'a> {
     frame: &'a crate::flame_graph::Frame,
     parent_ticks: usize,
     h_offset: f32,
     depth: usize,
 }
 
-impl FrameInfo<'_> {
+impl StackFrameInfo<'_> {
+    fn ratio(&self, include_native: bool) -> f32 {
+        let res = self.frame.ticks(include_native) as f32 / self.parent_ticks as f32;
+        assert!(res <= 1.0);
+        res
+    }
+
     fn for_child<'a>(
         &self,
         other: &'a crate::flame_graph::Frame,
         include_native: bool,
         h_offset: f32,
-    ) -> FrameInfo<'a> {
-        FrameInfo {
+    ) -> StackFrameInfo<'a> {
+        StackFrameInfo {
             frame: other,
             parent_ticks: self.frame.ticks(include_native),
             h_offset,

@@ -1,9 +1,9 @@
 use egui::{Color32, FontId};
 
 pub const GREENS: [ThemeColor; 3] = [
-    ThemeColor::new("#5CFF5C"),
-    ThemeColor::new("#49CC49"),
-    ThemeColor::new("#40B340"),
+    ThemeColor::new("#b3e2cd"),
+    ThemeColor::new("#fdcdac"),
+    ThemeColor::new("#cbd5e8"),
 ];
 
 pub const HOVER: ThemeColor = ThemeColor::new("#FFFFE0");
@@ -12,7 +12,7 @@ pub const FONT: FontId = FontId::proportional(12.0);
 
 pub fn pick_green(index: usize) -> Color32 {
     let i = index % GREENS.len();
-    return GREENS.get(i).unwrap().into();
+    GREENS.get(i).unwrap().into()
 }
 
 pub struct ThemeColor {

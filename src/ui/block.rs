@@ -30,7 +30,7 @@ impl<T: FnOnce(bool) -> Color32> Widget for Block<T> {
         let pos = self.pos;
 
         // White vertical border of 1px
-        let rect = Rect::from_two_pos(pos, pos2(pos.x + self.width, pos.y + HEIGHT - 1.0));
+        let rect = Rect::from_two_pos(pos, pos2(pos.x + self.width, pos.y - HEIGHT + 1.0));
         let res = ui.allocate_rect(rect, Sense::hover());
 
         let hover_pos: Option<Pos2> = ui.input(|i| i.pointer.hover_pos());
@@ -44,7 +44,7 @@ impl<T: FnOnce(bool) -> Color32> Widget for Block<T> {
 
         ui.painter().text(
             pos2(pos.x + 2.0, pos.y + 1.0),
-            Align2::LEFT_TOP,
+            Align2::LEFT_BOTTOM,
             trim_text(self.width, self.text),
             FONT,
             Color32::BLACK,
