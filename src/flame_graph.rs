@@ -17,9 +17,7 @@ impl FlameGraph {
         T: Read + Seek,
     {
         let mut fg = FlameGraph::default();
-        ExecutionSample::visit_events(value, |e| {
-            fg.add_sample(e)
-        })?;
+        ExecutionSample::visit_events(value, |e| fg.add_sample(e))?;
         Ok(fg)
     }
 

@@ -26,7 +26,10 @@ impl ExecutionSample {
             for event_res in r.events(&c) {
                 let event = event_res.with_context(|| "Unable to parse event.")?;
                 if event.class.name() == EXEC_SAMPLE || event.class.name() == NATIVE_EXEC_SAMPLE {
-                    visitor(ExecutionSample::from(event));
+                    let sample = ExecutionSample::from(event);
+                    if !sample.stack_trace.truncated {
+                        visitor(sample);
+                    }
                 }
             }
         }
