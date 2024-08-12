@@ -38,6 +38,9 @@ impl App for JfrViewApp {
                     let uf = UiFrame::new(ui, &vp, self.flame_graph.depth as f32 * HEIGHT);
                     let width = ui.available_width();
                     let parent_ticks = self.flame_graph.ticks(self.include_native);
+                    if parent_ticks == 0 {
+                        return;
+                    }
                     let mut child_x = 0.0;
                     let frames: Vec<_> = self
                         .flame_graph
@@ -142,6 +145,7 @@ struct StackFrameInfo<'a> {
 impl StackFrameInfo<'_> {
     fn ratio(&self, include_native: bool) -> f32 {
         let res = self.frame.ticks(include_native) as f32 / self.parent_ticks as f32;
+        dbg!(self.parent_ticks);
         assert!(res <= 1.0);
         res
     }

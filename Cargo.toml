@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-eframe = { version = "0.28.1", default-features = false, features = ["glow"] }
+eframe = { version = "0.28.1", default-features = false, features = ["glow","__screenshot"] }
 egui = { version = "0.28.1", default-features = false }
 indexmap = "2.2.6"
 jfrs = "0.2.5"
@@ -31,4 +31,5 @@ codegen-units = 1
 opt-level = 2
 
 [dev-dependencies]
+assert_cmd = "2.0.16"
 insta = { version = "1.39.0", features = ["glob"] }

@@ -1,4 +1,5 @@
-use anyhow::Context;
+use std::any::type_name;
+use anyhow::{anyhow, Context};
 use jfrs::reader::{
     event::{Accessor, Event},
     value_descriptor::ValueDescriptor,
@@ -6,6 +7,7 @@ use jfrs::reader::{
 };
 use log::debug;
 use std::io::{Read, Seek};
+use jfrs::reader::value_descriptor::Primitive;
 
 pub const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
 
@@ -64,13 +66,13 @@ impl From<Event<'_>> for ExecutionSample {
 #[derive(Debug)]
 #[allow(dead_code)]
 pub struct Thread {
-    pub java_name: String,
+    pub java_name: Option<String>,
     pub java_thread_id: i64,
 }
 
 impl From<Accessor<'_>> for Thread {
     fn from(value: Accessor<'_>) -> Self {
-        let java_name = extract_primitive::<&str>(&value, "javaName").to_string();
+        let java_name = extract_nullable_str(&value,"javaName");
         let java_thread_id: i64 = extract_primitive(&value, "javaThreadId");
         Thread {
             java_name,
@@ -186,9 +188,25 @@ fn extract_symbol(value: &Accessor, name: &str) -> String {
     str.to_string()
 }
 
+fn extract_nullable_str(value: &Accessor, name: &str) -> Option<String> {
+    value.get_field(name)
+        .ok_or_else(|| anyhow!("Unable to find field {name}"))
+        .map(|v| {
+            if let ValueDescriptor::Primitive(Primitive::NullString) = v.value {
+                None
+            } else {
+                let result = <&str>::try_from(v.value)
+                    .map_err(|_| anyhow!("Unable to convert {name} to string"))
+                    .unwrap();
+                Some(result.to_string())
+            }
+        })
+        .unwrap()
+}
+
 fn extract_primitive<'a, T>(value: &Accessor<'a>, name: &str) -> T
 where
-    T: TryFrom<&'a ValueDescriptor>,
+    T: TryFrom<&'a ValueDescriptor> + Default,
 {
     value
         .get_field(name)
