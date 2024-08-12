@@ -15,7 +15,10 @@ impl UiFrame {
     }
 
     fn from_coords(min_height: f32, max_height: f32) -> Self {
-        Self { min_height, max_height: max_height + min_height }
+        Self {
+            min_height,
+            max_height: max_height + min_height,
+        }
     }
 
     pub fn pos_from_bottom(&self, distance: f32) -> f32 {

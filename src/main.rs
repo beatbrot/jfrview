@@ -1,9 +1,9 @@
+use crate::flame_graph::FlameGraph;
 use crate::ui::app::JfrViewApp;
 use eframe::AppCreator;
-use std::fs::File;
 #[cfg(not(target_arch = "wasm32"))]
 use std::error::Error;
-use crate::flame_graph::FlameGraph;
+use std::fs::File;
 
 mod data;
 mod exec;
@@ -48,7 +48,7 @@ fn main() {
 fn create_app(jfr_file: Option<File>) -> AppCreator {
     let flame_graph: FlameGraph = match jfr_file {
         Some(v) => FlameGraph::try_new(v).unwrap(),
-        None => FlameGraph::default()
+        None => FlameGraph::default(),
     };
     Box::new(|cc| Ok(Box::new(JfrViewApp::new(cc, flame_graph))))
 }

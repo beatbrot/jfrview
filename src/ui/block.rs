@@ -1,4 +1,4 @@
-use egui::{Align2, Color32, CursorIcon, pos2, Pos2, Rect, Response, Sense, Ui, Widget};
+use egui::{pos2, Align2, Color32, CursorIcon, Pos2, Rect, Response, Sense, Ui, Widget};
 
 use crate::ui::theme::FONT;
 

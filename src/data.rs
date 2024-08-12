@@ -1,7 +1,11 @@
+use anyhow::Context;
+use jfrs::reader::{
+    event::{Accessor, Event},
+    value_descriptor::ValueDescriptor,
+    JfrReader,
+};
+use log::debug;
 use std::io::{Read, Seek};
-use anyhow::{Context};
-use jfrs::reader::{event::{Accessor, Event}, JfrReader, value_descriptor::ValueDescriptor};
-use log::{debug};
 
 pub const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
 
@@ -17,7 +21,10 @@ pub struct ExecutionSample {
 }
 
 impl ExecutionSample {
-    pub fn visit_events<T: Read + Seek>(source: T, mut visitor: impl FnMut(ExecutionSample)) -> anyhow::Result<()> {
+    pub fn visit_events<T: Read + Seek>(
+        source: T,
+        mut visitor: impl FnMut(ExecutionSample),
+    ) -> anyhow::Result<()> {
         let mut reader = JfrReader::new(source);
 
         for result in reader.chunks() {
@@ -168,7 +175,9 @@ impl std::fmt::Display for Class {
 
 impl From<Accessor<'_>> for Class {
     fn from(value: Accessor<'_>) -> Self {
-        Self { name: extract_symbol(&value, "name") }
+        Self {
+            name: extract_symbol(&value, "name"),
+        }
     }
 }
 

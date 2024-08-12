@@ -33,9 +33,9 @@ impl Into<Color32> for &ThemeColor {
 
 #[cfg(test)]
 mod test {
-    use egui::Color32;
-    use egui::ecolor::HexColor;
     use crate::ui::theme::{pick_green, ThemeColor, GREENS};
+    use egui::ecolor::HexColor;
+    use egui::Color32;
 
     #[test]
     fn no_panic_with_high_indices() {
@@ -44,7 +44,7 @@ mod test {
             pick_green(i);
         }
     }
-    
+
     #[test]
     fn converting_to_color32_works() {
         let tc = ThemeColor::new("#ff00ff");

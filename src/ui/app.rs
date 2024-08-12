@@ -8,9 +8,9 @@ use egui::{Context, Id, ScrollArea, Style};
 use crate::flame_graph::FlameGraph;
 use crate::ui::block::{Block, HEIGHT};
 use crate::ui::fonts::load_fonts;
-use crate::ui::ui_frame::UiFrame;
 use crate::ui::theme;
 use crate::ui::theme::HOVER;
+use crate::ui::ui_frame::UiFrame;
 
 pub struct JfrViewApp {
     pub flame_graph: FlameGraph,

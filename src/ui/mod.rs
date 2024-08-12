@@ -1,6 +1,6 @@
 pub mod app;
-mod fonts;
 mod block;
+mod fonts;
 mod menu_bar;
 mod theme;
 mod ui_frame;
