@@ -51,11 +51,11 @@ impl Frame {
     }
 
     pub fn ticks(&self, include_native: bool) -> usize {
-        return if include_native {
+        if include_native {
             self.jvm_ticks + self.native_ticks
         } else {
             self.jvm_ticks
-        };
+        }
     }
 
     fn add_ticks(&mut self, include_native: bool, ticks: usize) {

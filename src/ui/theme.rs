@@ -27,6 +27,28 @@ impl ThemeColor {
 
 impl Into<Color32> for &ThemeColor {
     fn into(self) -> Color32 {
-        return Color32::from_hex(&self.value).unwrap();
+        Color32::from_hex(&self.value).unwrap()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use egui::Color32;
+    use egui::ecolor::HexColor;
+    use crate::ui::theme::{pick_green, ThemeColor, GREENS};
+
+    #[test]
+    fn no_panic_with_high_indices() {
+        let max = GREENS.len() * 2;
+        for i in 0..max {
+            pick_green(i);
+        }
+    }
+    
+    #[test]
+    fn converting_to_color32_works() {
+        let tc = ThemeColor::new("#ff00ff");
+        let c32: Color32 = (&tc).into();
+        assert_eq!(HexColor::Hex6(c32).to_string(), tc.value)
     }
 }
