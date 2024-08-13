@@ -1,10 +1,11 @@
+use std::cell::Cell;
 use std::sync::mpsc::{channel, Receiver, Sender};
 
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
-use eframe::{App, CreationContext, Frame};
+use eframe::{App, Frame};
 use egui::{Context, Id, ScrollArea, Style};
-
+use puffin::{profile_function};
 use crate::flame_graph::FlameGraph;
 use crate::ui::block::{Block, HEIGHT};
 use crate::ui::fonts::load_fonts;
@@ -16,20 +17,25 @@ pub struct JfrViewApp {
     pub flame_graph: FlameGraph,
     pub file_channel: (Sender<FlameGraph>, Receiver<FlameGraph>),
     pub include_native: bool,
-    pub hovered: Option<String>,
+    pub hovered: Cell<Option<String>>,
 }
 
 impl App for JfrViewApp {
     fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
+        self.simple_update(ctx);
+    }
+}
+
+impl JfrViewApp {
+    fn simple_update(&mut self, ctx: &Context) {
+        profile_function!();
         if let Ok(fg) = self.file_channel.1.try_recv() {
             self.flame_graph = fg;
         }
 
         self.create_menubar(ctx);
-        egui::TopBottomPanel::bottom(Id::new("bottom")).show(&ctx, |ui| {
-            self.draw_hover_info(ui);
-        });
-        self.hovered = None;
+        self.create_bottom_bar(ctx);
+
 
         egui::CentralPanel::default()
             .frame(Self::central_frame(&ctx.style()))
@@ -42,12 +48,8 @@ impl App for JfrViewApp {
                         return;
                     }
                     let mut child_x = 0.0;
-                    let frames: Vec<_> = self
-                        .flame_graph
-                        .frames
-                        .values()
-                        .map(|v| v.to_owned())
-                        .collect();
+                    let frames = self.flame_graph.frames.values();
+
                     for child in frames {
                         let fi: StackFrameInfo = StackFrameInfo {
                             frame: &child,
@@ -60,26 +62,37 @@ impl App for JfrViewApp {
                 });
             });
     }
+
+    fn create_bottom_bar(&self, ctx: &Context) {
+        profile_function!();
+        egui::TopBottomPanel::bottom(Id::new("bottom")).show(&ctx, |ui| {
+            self.draw_hover_info(ui);
+        });
+    }
 }
 
 impl JfrViewApp {
-    pub fn new(cc: &CreationContext, flame_graph: FlameGraph) -> Self {
-        cc.egui_ctx.set_fonts(load_fonts());
+    pub fn new(ctx: &Context, flame_graph: FlameGraph) -> Self {
+        ctx.set_fonts(load_fonts());
         Self {
             file_channel: channel(),
             flame_graph,
             include_native: false,
-            hovered: None,
+            hovered: Cell::new(None),
         }
     }
 
     fn draw_node(
-        &mut self,
+        &self,
         ui: &mut egui::Ui,
         frame_info: &StackFrameInfo,
         max_width: f32,
         uf: &UiFrame,
     ) -> f32 {
+        profile_function!();
+        if frame_info.frame.ticks(self.include_native) <= 0 {
+            return 0.0
+        }
         let node_width = frame_info.ratio(self.include_native) * max_width;
         assert!(node_width > 0.0);
         let y = uf.pos_from_bottom(((frame_info.depth - 1) as f32) * HEIGHT);
@@ -93,11 +106,11 @@ impl JfrViewApp {
             |h| Self::get_hover_color(frame_info.depth, h),
         ));
         if response.hovered() {
-            self.hovered = Some(format!(
+            self.hovered.replace(Some(format!(
                 "{:?} ({} samples)",
                 frame_info.frame.method,
                 frame_info.frame.ticks(self.include_native)
-            ));
+            )));
         }
 
         let mut child_x: f32 = frame_info.h_offset;
@@ -114,7 +127,7 @@ impl JfrViewApp {
     }
 
     fn draw_hover_info(&self, ui: &mut egui::Ui) {
-        if let Some(method) = &self.hovered {
+        if let Some(method) = &self.hovered.take() {
             ui.colored_label(Color32::GRAY, method);
         }
     }
@@ -145,7 +158,6 @@ struct StackFrameInfo<'a> {
 impl StackFrameInfo<'_> {
     fn ratio(&self, include_native: bool) -> f32 {
         let res = self.frame.ticks(include_native) as f32 / self.parent_ticks as f32;
-        dbg!(self.parent_ticks);
         assert!(res <= 1.0);
         res
     }
@@ -162,5 +174,47 @@ impl StackFrameInfo<'_> {
             h_offset,
             depth: self.depth + 1,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::flame_graph::FlameGraph;
+    use crate::ui::app::JfrViewApp;
+    use egui::{vec2, RawInput, Rect};
+    use std::fs;
+    use std::fs::File;
+
+    #[test]
+    fn render_empty_fg() {
+        render_flame_graph(Default::default());
+    }
+
+    #[test]
+    fn render_jfr_files() -> anyhow::Result<()> {
+        let files = fs::read_dir("test-data")?;
+        for path in files {
+            let dir_entry = path?;
+            let tile_name = dir_entry.file_name();
+            let file_name = tile_name.to_string_lossy();
+            if file_name.ends_with(".jfr") {
+                let file = File::open(dir_entry.path())?;
+                let fg = FlameGraph::try_new(file)?;
+                render_flame_graph(fg);
+            }
+        }
+        Ok(())
+    }
+
+    fn render_flame_graph(flame_graph: FlameGraph) {
+        let ctx = egui::Context::default();
+        let ri: RawInput = RawInput {
+            screen_rect: Some(Rect::from_min_size(Default::default(), vec2(400.0, 600.0))),
+            ..RawInput::default()
+        };
+        let _ = ctx.run(ri, |ctx| {
+            JfrViewApp::new(ctx, flame_graph)
+                .simple_update(ctx);
+        });
     }
 }

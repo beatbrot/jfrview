@@ -1,4 +1,3 @@
-use std::any::type_name;
 use anyhow::{anyhow, Context};
 use jfrs::reader::{
     event::{Accessor, Event},
@@ -36,9 +35,7 @@ impl ExecutionSample {
                 let event = event_res.with_context(|| "Unable to parse event.")?;
                 if event.class.name() == EXEC_SAMPLE || event.class.name() == NATIVE_EXEC_SAMPLE {
                     let sample = ExecutionSample::from(event);
-                    if !sample.stack_trace.truncated {
-                        visitor(sample);
-                    }
+                    visitor(sample);
                 }
             }
         }
@@ -72,7 +69,7 @@ pub struct Thread {
 
 impl From<Accessor<'_>> for Thread {
     fn from(value: Accessor<'_>) -> Self {
-        let java_name = extract_nullable_str(&value,"javaName");
+        let java_name = extract_nullable_str(&value, "javaName");
         let java_thread_id: i64 = extract_primitive(&value, "javaThreadId");
         Thread {
             java_name,

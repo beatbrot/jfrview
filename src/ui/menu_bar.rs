@@ -7,6 +7,7 @@ use std::io::Cursor;
 
 impl JfrViewApp {
     pub fn create_menubar(&mut self, ctx: &Context) {
+        puffin::profile_function!();
         egui::TopBottomPanel::top(Id::new("top")).show(ctx, |ui| {
             ui.horizontal(|ui| {
                 let button = ui.button("Pick file...");
