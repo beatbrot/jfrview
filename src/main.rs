@@ -14,6 +14,10 @@ mod ui;
 fn main() -> Result<(), Box<dyn Error>> {
     use std::env;
     env::set_var("RUST_BACKTRACE", "1");
+    #[cfg(feature = "puffin")]
+    {
+        start_puffin_server();
+    }
     let args: Vec<String> = env::args().collect::<Vec<_>>();
     let arg = args.get(1);
     let file = parse_jfr_arg(arg)?;
@@ -53,7 +57,8 @@ fn create_app(jfr_file: Option<File>) -> AppCreator {
     Box::new(|cc| Ok(Box::new(JfrViewApp::new(&cc.egui_ctx, flame_graph))))
 }
 
-/*
+
+#[cfg(feature = "puffin")]
 fn start_puffin_server() {
     puffin::set_scopes_on(true); // tell puffin to collect data
 
@@ -77,4 +82,3 @@ fn start_puffin_server() {
         }
     };
 }
-*/
