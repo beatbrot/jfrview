@@ -27,7 +27,7 @@ impl App for JfrViewApp {
 }
 
 impl JfrViewApp {
-    fn simple_update(&mut self, ctx: &Context) {
+    pub fn simple_update(&mut self, ctx: &Context) {
         profile_function!();
         if let Ok(fg) = self.file_channel.1.try_recv() {
             self.flame_graph = fg;

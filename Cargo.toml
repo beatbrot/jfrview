@@ -16,6 +16,7 @@ puffin_http = { version = "0.16.1", optional = true }
 
 [dev-dependencies]
 insta = { version = "1.39.0", features = ["glob"] }
+criterion = { version = "0.5.1", features = ["html_reports"] }
 
 [features]
 puffin = ["dep:puffin_http", "eframe/puffin"]
@@ -37,4 +38,8 @@ codegen-units = 1
 # Optimize all dependencies even in debug builds:
 [profile.dev.package."*"]
 opt-level = 2
+
+[[bench]]
+name = "render_bench"
+harness = false
 
