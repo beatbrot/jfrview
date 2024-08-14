@@ -1,17 +1,17 @@
 use std::cell::Cell;
 use std::sync::mpsc::{channel, Receiver, Sender};
 
-use eframe::emath::pos2;
-use eframe::epaint::Color32;
-use eframe::{App, Frame};
-use egui::{Context, Id, ScrollArea, Style};
-use puffin::{profile_function};
 use crate::flame_graph::FlameGraph;
 use crate::ui::block::{Block, HEIGHT};
 use crate::ui::fonts::load_fonts;
 use crate::ui::theme;
 use crate::ui::theme::HOVER;
 use crate::ui::ui_frame::UiFrame;
+use eframe::emath::pos2;
+use eframe::epaint::Color32;
+use eframe::{App, Frame};
+use egui::{Context, Id, ScrollArea, Style};
+use puffin::profile_function;
 
 pub struct JfrViewApp {
     pub flame_graph: FlameGraph,
@@ -35,7 +35,6 @@ impl JfrViewApp {
 
         self.create_menubar(ctx);
         self.create_bottom_bar(ctx);
-
 
         egui::CentralPanel::default()
             .frame(Self::central_frame(&ctx.style()))
@@ -91,26 +90,29 @@ impl JfrViewApp {
     ) -> f32 {
         profile_function!();
         if frame_info.frame.ticks(self.include_native) <= 0 {
-            return 0.0
+            return 0.0;
         }
         let node_width = frame_info.ratio(self.include_native) * max_width;
         assert!(node_width > 0.0);
         let y = uf.pos_from_bottom(((frame_info.depth - 1) as f32) * HEIGHT);
+        let below_max_height = y > (uf.max_vis_height + HEIGHT + HEIGHT);
         if y < 0.0 {
             return 0.0;
         }
-        let response = ui.add(Block::new(
-            pos2(frame_info.h_offset, y),
-            node_width,
-            format!("{:?}", frame_info.frame.method),
-            |h| Self::get_hover_color(frame_info.depth, h),
-        ));
-        if response.hovered() {
-            self.hovered.replace(Some(format!(
-                "{:?} ({} samples)",
-                frame_info.frame.method,
-                frame_info.frame.ticks(self.include_native)
-            )));
+        if !below_max_height {
+            let response = ui.add(Block::new(
+                pos2(frame_info.h_offset, y),
+                node_width,
+                format!("{:?}", frame_info.frame.method),
+                |h| Self::get_hover_color(frame_info.depth, h),
+            ));
+            if response.hovered() {
+                self.hovered.replace(Some(format!(
+                    "{:?} ({} samples)",
+                    frame_info.frame.method,
+                    frame_info.frame.ticks(self.include_native)
+                )));
+            }
         }
 
         let mut child_x: f32 = frame_info.h_offset;
@@ -213,8 +215,7 @@ mod tests {
             ..RawInput::default()
         };
         let _ = ctx.run(ri, |ctx| {
-            JfrViewApp::new(ctx, flame_graph)
-                .simple_update(ctx);
+            JfrViewApp::new(ctx, flame_graph).simple_update(ctx);
         });
     }
 }
