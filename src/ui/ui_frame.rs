@@ -1,4 +1,18 @@
 use egui::{vec2, Rect, Ui};
+use crate::ui::block::HEIGHT;
+use crate::ui::ui_frame::CullingVisibility::Visible;
+
+const DOUBLE_HEIGHT: f32 = HEIGHT + HEIGHT;
+
+/// Visibility of a row (including its 'children', which are the rows above it)
+pub enum CullingVisibility {
+    /// This row is hidden - children may be visible
+    Hidden,
+    /// This row is hidden - children are definitely not visible
+    HiddenWithChildren,
+    /// Row is visible and shall be rendered at given offset
+    Visible(f32),
+}
 
 #[derive(Debug)]
 pub struct UiFrame {
@@ -24,19 +38,36 @@ impl UiFrame {
         }
     }
 
-    pub fn pos_from_bottom(&self, distance: f32) -> f32 {
-        self.max_height - distance
+    /// Selects row starting from the bottom. The bottommost row is zero.
+    pub fn pos_from_bottom(&self, row: usize) -> CullingVisibility {
+        let offset = self.max_height - (row as f32 * HEIGHT);
+        if offset <= 0.0 {
+            CullingVisibility::HiddenWithChildren
+        } else if offset > (self.max_vis_height + DOUBLE_HEIGHT) {
+            CullingVisibility::Hidden
+        } else {
+            Visible(offset)
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::ui::ui_frame::UiFrame;
+    use crate::ui::block::HEIGHT;
+    use crate::ui::ui_frame::{CullingVisibility, UiFrame};
 
     #[test]
     fn max_height_considers_min_height() {
         let uframe = UiFrame::from_coords(10.0, 0.0, 15.0);
         assert_eq!(uframe.min_height, 10.0);
         assert_eq!(uframe.max_height, 25.0);
+    }
+
+    #[test]
+    fn culling_visiblity() {
+        let uframe = UiFrame::from_coords(10.0, HEIGHT * 2.0, HEIGHT * 10.0);
+        assert!(matches!(uframe.pos_from_bottom(8),CullingVisibility::Visible(_)));
+        assert!(matches!(uframe.pos_from_bottom(3),CullingVisibility::Hidden));
+        assert!(matches!(uframe.pos_from_bottom(20),CullingVisibility::HiddenWithChildren));
     }
 }

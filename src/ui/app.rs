@@ -6,12 +6,13 @@ use crate::ui::block::{Block, HEIGHT};
 use crate::ui::fonts::load_fonts;
 use crate::ui::theme;
 use crate::ui::theme::HOVER;
-use crate::ui::ui_frame::UiFrame;
+use crate::ui::ui_frame::{CullingVisibility, UiFrame};
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
 use eframe::{App, Frame};
 use egui::{Context, Id, ScrollArea, Style};
 use puffin::profile_function;
+use crate::ui::ui_frame::CullingVisibility::Visible;
 
 pub struct JfrViewApp {
     pub flame_graph: FlameGraph,
@@ -70,6 +71,8 @@ impl JfrViewApp {
     }
 }
 
+static mut COUNTER: usize = 0;
+
 impl JfrViewApp {
     pub fn new(ctx: &Context, flame_graph: FlameGraph) -> Self {
         ctx.set_fonts(load_fonts());
@@ -94,24 +97,32 @@ impl JfrViewApp {
         }
         let node_width = frame_info.ratio(self.include_native) * max_width;
         assert!(node_width > 0.0);
-        let y = uf.pos_from_bottom(((frame_info.depth - 1) as f32) * HEIGHT);
-        let below_max_height = y > (uf.max_vis_height + HEIGHT + HEIGHT);
-        if y < 0.0 {
-            return 0.0;
-        }
-        if !below_max_height {
-            let response = ui.add(Block::new(
-                pos2(frame_info.h_offset, y),
-                node_width,
-                format!("{:?}", frame_info.frame.method),
-                |h| Self::get_hover_color(frame_info.depth, h),
-            ));
-            if response.hovered() {
-                self.hovered.replace(Some(format!(
-                    "{:?} ({} samples)",
-                    frame_info.frame.method,
-                    frame_info.frame.ticks(self.include_native)
-                )));
+        let culling_vis = uf.pos_from_bottom(frame_info.depth - 1);
+        match culling_vis {
+            CullingVisibility::HiddenWithChildren => return 0.0,
+            Visible(y) => {
+                assert!(y >= 0.0);
+                let response = ui.add(Block::new(
+                    pos2(frame_info.h_offset, y),
+                    node_width,
+                    format!("{:?}", frame_info.frame.method),
+                    |h| Self::get_hover_color(frame_info.depth, h),
+                ));
+                if response.hovered() {
+                    self.hovered.replace(Some(format!(
+                        "{:?} ({} samples)",
+                        frame_info.frame.method,
+                        frame_info.frame.ticks(self.include_native)
+                    )));
+                }
+            }
+            CullingVisibility::Hidden => {
+                unsafe {
+                    COUNTER +=1;
+                    if COUNTER % 1000 == 0 {
+                        dbg!("Culled!");
+                    }
+                }
             }
         }
 
