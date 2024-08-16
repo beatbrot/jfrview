@@ -71,8 +71,6 @@ impl JfrViewApp {
     }
 }
 
-static mut COUNTER: usize = 0;
-
 impl JfrViewApp {
     pub fn new(ctx: &Context, flame_graph: FlameGraph) -> Self {
         ctx.set_fonts(load_fonts());
@@ -116,14 +114,7 @@ impl JfrViewApp {
                     )));
                 }
             }
-            CullingVisibility::Hidden => {
-                unsafe {
-                    COUNTER +=1;
-                    if COUNTER % 1000 == 0 {
-                        dbg!("Culled!");
-                    }
-                }
-            }
+            CullingVisibility::Hidden => {}
         }
 
         let mut child_x: f32 = frame_info.h_offset;
