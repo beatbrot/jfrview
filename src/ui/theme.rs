@@ -1,41 +1,34 @@
+use std::sync::LazyLock;
+
 use egui::{Color32, FontId};
 
-pub const GREENS: [ThemeColor; 3] = [
-    ThemeColor::new("#b3e2cd"),
-    ThemeColor::new("#fdcdac"),
-    ThemeColor::new("#cbd5e8"),
-];
+pub const GREENS: LazyLock<[Color32; 3]> = LazyLock::new(||   {
+        [
+            Color32::from_hex("#b3e2cd").unwrap(),
+            Color32::from_hex("#fdcdac").unwrap(),
+            Color32::from_hex("#cbd5e8").unwrap()
+    ]
+});
 
-pub const HOVER: ThemeColor = ThemeColor::new("#FFFFE0");
+pub const HOVER: LazyLock<Color32> = LazyLock::new(|| Color32::from_hex("#FFFFE0").unwrap());
 
 pub const FONT: FontId = FontId::proportional(12.0);
 
 pub fn pick_green(index: usize) -> Color32 {
     let i = index % GREENS.len();
-    GREENS.get(i).unwrap().into()
+    *GREENS.get(i).unwrap()
 }
 
-pub struct ThemeColor {
-    value: &'static str,
-}
-
-impl ThemeColor {
-    const fn new(color: &'static str) -> Self {
-        Self { value: color }
-    }
-}
-
-impl Into<Color32> for &ThemeColor {
-    fn into(self) -> Color32 {
-        Color32::from_hex(&self.value).unwrap()
-    }
-}
 
 #[cfg(test)]
 mod test {
-    use crate::ui::theme::{pick_green, ThemeColor, GREENS};
-    use egui::ecolor::HexColor;
-    use egui::Color32;
+    use std::ops::Deref;
+    use crate::ui::theme::{pick_green, GREENS, HOVER};
+    
+    #[test]
+    fn hover_can_be_initialized() {
+        let _ = HOVER.deref();
+    }
 
     #[test]
     fn no_panic_with_high_indices() {
@@ -43,12 +36,5 @@ mod test {
         for i in 0..max {
             pick_green(i);
         }
-    }
-
-    #[test]
-    fn converting_to_color32_works() {
-        let tc = ThemeColor::new("#ff00ff");
-        let c32: Color32 = (&tc).into();
-        assert_eq!(HexColor::Hex6(c32).to_string(), tc.value)
     }
 }

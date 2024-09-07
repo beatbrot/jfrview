@@ -6,13 +6,13 @@ use crate::ui::block::{Block, HEIGHT};
 use crate::ui::fonts::load_fonts;
 use crate::ui::theme;
 use crate::ui::theme::HOVER;
+use crate::ui::ui_frame::CullingVisibility::Visible;
 use crate::ui::ui_frame::{CullingVisibility, UiFrame};
 use eframe::emath::pos2;
 use eframe::epaint::Color32;
 use eframe::{App, Frame};
 use egui::{Context, Id, ScrollArea, Style};
 use puffin::profile_function;
-use crate::ui::ui_frame::CullingVisibility::Visible;
 
 pub struct JfrViewApp {
     pub flame_graph: FlameGraph,
@@ -138,7 +138,7 @@ impl JfrViewApp {
 
     fn get_hover_color(index: usize, hover: bool) -> Color32 {
         if hover {
-            (&HOVER).into()
+            *HOVER
         } else {
             theme::pick_green(index)
         }
