@@ -13,7 +13,7 @@ fn render_flame_graph(height: f32) -> (RawInput, Context) {
 }
 
 fn bench_large(c: &mut Criterion) {
-    let file = File::open("cfg6_validate_small.jfr").unwrap();
+    let file = File::open("large_jfr.jfr").unwrap();
     bench_render(c, &file, 600.0);
     bench_render(c, &file, 900.0);
 }
