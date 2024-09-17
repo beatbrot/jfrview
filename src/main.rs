@@ -1,6 +1,6 @@
 use crate::flame_graph::FlameGraph;
 use crate::ui::app::JfrViewApp;
-use eframe::AppCreator;
+use eframe::{AppCreator, NativeOptions};
 #[cfg(not(target_arch = "wasm32"))]
 use std::error::Error;
 use std::fs::File;
@@ -21,8 +21,28 @@ fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect::<Vec<_>>();
     let arg = args.get(1);
     let file = parse_jfr_arg(arg)?;
-    eframe::run_native("JfrView", Default::default(), create_app(file))?;
+    eframe::run_native("JfrView", create_options(), create_app(file))?;
     Ok(())
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn create_options() -> NativeOptions {
+    use egui::{vec2, IconData, ViewportBuilder};
+    let icon_data = include_bytes!("../icon.rgba");
+    let (width, height) = (256, 256);
+
+    let icon = IconData {
+        rgba: icon_data.to_vec(),
+        width,
+        height,
+    };
+
+    NativeOptions {
+        viewport: ViewportBuilder::default()
+            .with_icon(icon)
+            .with_inner_size(vec2(725.0, 310.0)),
+        ..Default::default()
+    }
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -56,7 +76,6 @@ fn create_app(jfr_file: Option<File>) -> AppCreator {
     };
     Box::new(|cc| Ok(Box::new(JfrViewApp::new(&cc.egui_ctx, flame_graph))))
 }
-
 
 #[cfg(feature = "puffin")]
 fn start_puffin_server() {

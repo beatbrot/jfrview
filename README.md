@@ -1,6 +1,6 @@
 
 <div align="center">
-<h1>JfrView</h1>
+<h1>♨️ JfrView</h1>
 <p>
 
 ![GitHub branch status](https://img.shields.io/github/checks-status/beatbrot/jfrview/master)
@@ -12,9 +12,7 @@ One-Click Flamegraph Visualization for JFR Files, even in the Browser
 </p>
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/media/screenshot-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset=".github/media/screenshot-light.png">
-    <img alt="Screenshot of the plugin's output" src=".github/media/screenshot-light.png" />
+    <img alt="Screenshot of JfrView" src=".github/media/screenshot.png" />
 </picture>
 
 </div>

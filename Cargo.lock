@@ -1639,6 +1639,7 @@ dependencies = [
  "eframe",
  "egui",
  "futures",
+ "image",
  "indexmap",
  "insta",
  "jfrs",

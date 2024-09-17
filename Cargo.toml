@@ -2,6 +2,7 @@
 name = "jfrview"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
 
 [dependencies]
 eframe = { version = "0.28.1", default-features = false, features = ["glow"] }
@@ -20,6 +21,7 @@ criterion = { version = "0.5.1", features = ["html_reports"] }
 
 [features]
 puffin = ["dep:puffin_http", "eframe/puffin"]
+__screenshot = ["eframe/__screenshot"]
 
 # desktop:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
@@ -43,3 +45,5 @@ opt-level = 2
 name = "render_bench"
 harness = false
 
+[build-dependencies]
+image = { version = "0.25.2", default-features = false, features = ["png"] }

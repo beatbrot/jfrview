@@ -1,4 +1,6 @@
 /target
 *.jfr
+*.class
 /.idea
 /dist
+icon.rgba
