@@ -17,7 +17,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 /// Converts "icon.png" in the repo root to "icon.rgba"
 fn convert_icon() -> Result<(), Box<dyn Error>> {
-    let screenshot_path = project_dir()?.join(format!("{IMAGE_FILENAME}.png"));
+    let screenshot_path = project_dir()?
+        .join(".github/media")
+        .join(format!("{IMAGE_FILENAME}.png"));
     rerun_if_changed(&screenshot_path);
 
     let img = ImageReader::open(screenshot_path)?.decode()?.into_rgba8();
