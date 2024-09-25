@@ -9,7 +9,7 @@ eframe = { version = "0.28.1", default-features = false, features = ["glow"] }
 egui = { version = "0.28.1", default-features = false }
 indexmap = "2.2.6"
 jfrs = "0.2.5"
-rfd = "0.14.1"
+rfd = "0.15.0"
 log = "0.4.22"
 anyhow = "1.0.89"
 puffin = "0.19.1"
