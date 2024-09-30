@@ -5,7 +5,7 @@ edition = "2021"
 license = "MIT"
 
 [dependencies]
-eframe = { version = "0.28.1", default-features = false, features = ["glow"] }
+eframe = { version = "0.29.0", default-features = false, features = ["glow"] }
 egui = { version = "0.28.1", default-features = false }
 indexmap = "2.2.6"
 jfrs = "0.2.5"
