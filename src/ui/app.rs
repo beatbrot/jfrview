@@ -216,8 +216,8 @@ mod tests {
             screen_rect: Some(Rect::from_min_size(Default::default(), vec2(400.0, 600.0))),
             ..RawInput::default()
         };
-        let _ = ctx.run(ri, |ctx| {
-            JfrViewApp::new(ctx, flame_graph).simple_update(ctx);
-        });
+        ctx.begin_pass(ri);
+        JfrViewApp::new(&ctx, flame_graph).simple_update(&ctx);
+        let _ = ctx.end_pass();
     }
 }
