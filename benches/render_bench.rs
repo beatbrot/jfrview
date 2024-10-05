@@ -19,9 +19,9 @@ fn bench_large(c: &mut Criterion) {
 }
 
 fn bench_render(c: &mut Criterion, file: &File, height: f32) {
-    let fg = FlameGraph::try_new(file).unwrap();
     let (ri, ctx) = render_flame_graph(height);
     let _ = ctx.run(ri, |ctx| {
+        let fg = FlameGraph::try_new(file).unwrap();
         let mut app = JfrViewApp::new(ctx, fg);
         c.bench_function(format!("render large (height: {height})").as_str(), |b| b.iter(|| {
             app.simple_update(ctx);
