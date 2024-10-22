@@ -46,4 +46,4 @@ name = "render_bench"
 harness = false
 
 [build-dependencies]
-image = { version = "0.25.2", default-features = false, features = ["png"] }
+image = { version = "0.25.4", default-features = false, features = ["png"] }
