@@ -5,45 +5,18 @@ edition = "2021"
 license = "MIT"
 
 [dependencies]
-eframe = { version = "0.28.1", default-features = false, features = ["glow"] }
-egui = { version = "0.28.1", default-features = false }
 indexmap = "2.2.6"
 jfrs = "0.2.5"
-rfd = "0.15.0"
 log = "0.4.22"
 anyhow = "1.0.89"
-puffin = "0.19.1"
 puffin_http = { version = "0.16.1", optional = true }
 
 [dev-dependencies]
 insta = { version = "1.39.0", features = ["glob"] }
 criterion = { version = "0.5.1", features = ["html_reports"] }
 
-[features]
-puffin = ["dep:puffin_http", "eframe/puffin"]
-__screenshot = ["eframe/__screenshot"]
-
-# desktop:
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-futures = "0.3.30"
-
-# web:
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-wasm-bindgen-futures = "0.4"
-
 [profile.release]
 opt-level = "s"
 strip = true
 lto = "thin"
 codegen-units = 1
-
-# Optimize all dependencies even in debug builds:
-[profile.dev.package."*"]
-opt-level = 2
-
-[[bench]]
-name = "render_bench"
-harness = false
-
-[build-dependencies]
-image = { version = "0.25.2", default-features = false, features = ["png"] }
