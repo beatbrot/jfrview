@@ -11,7 +11,7 @@ indexmap = "2.7.0"
 jfrs = "0.2.5"
 rfd = "0.15.1"
 log = "0.4.22"
-anyhow = "1.0.93"
+anyhow = "1.0.94"
 puffin = "0.19.1"
 puffin_http = { version = "0.16.1", optional = true }
 
