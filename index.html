@@ -1,24 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JfrView</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-        }
-        canvas {
-            display: block;
-            width: 100vw;
-            height: 100vh;
-        }
-    </style>
-</head>
-<body>
-<canvas id="canvas"></canvas>
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <title>JfrView</title>
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="node_modules/d3-flame-graph/dist/d3-flamegraph.css"
+        />
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div class="container" id="container">
+            <input type="file" id="filePicker" />
+            <input type="checkbox" id="includeNativeToggle" />
+            <label for="includeNativeToggle">Include Native frames</label>
+            <div id="chart" style="background-color: lightgray"></div>
+            <span id="details"></span>
+        </div>
+        <script type="module" src="index.ts"></script>
+    </body>
 </html>

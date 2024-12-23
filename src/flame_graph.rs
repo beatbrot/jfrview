@@ -1,9 +1,8 @@
 use std::cmp::max;
 use std::io::{Read, Seek};
 
-use indexmap::IndexMap;
-
 use crate::data::{ExecutionSample, Method};
+use indexmap::IndexMap;
 
 #[derive(Default, Debug)]
 pub struct FlameGraph {
@@ -29,8 +28,8 @@ impl FlameGraph {
 #[derive(Debug, Clone)]
 pub struct Frame {
     pub method: Method,
-    jvm_ticks: usize,
-    native_ticks: usize,
+    pub jvm_ticks: usize,
+    pub native_ticks: usize,
     pub children: IndexMap<Method, Frame>,
 }
 

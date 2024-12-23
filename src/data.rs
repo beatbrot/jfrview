@@ -136,8 +136,8 @@ impl std::fmt::Debug for StackFrame {
 #[allow(dead_code)]
 #[derive(Hash, PartialEq, Eq, Clone)]
 pub struct Method {
-    name: String,
-    class: Class,
+    pub name: String,
+    pub class: Class,
 }
 
 impl std::fmt::Debug for Method {
