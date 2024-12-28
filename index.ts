@@ -1,0 +1,80 @@
+import init, { parse } from "./pkg/jfrview";
+import * as fg from "d3-flame-graph";
+import * as d3 from "d3";
+
+configureEl("filePicker", (input: HTMLInputElement) => {
+  input.onchange = () => fileSelected(input.files!![0]);
+});
+
+const includeNativeToggle = configureEl(
+  "includeNativeToggle",
+  (el: HTMLInputElement) => {
+    el.onchange = refresh_graph;
+  },
+);
+
+const details = document.getElementById("details") as HTMLSpanElement;
+
+configureEl("chart", (el) => {
+  el.ondrop = (e) => {
+    e.preventDefault();
+    fileSelected(e.dataTransfer!!.files[0]);
+  };
+  el.ondragover = (ev) => ev.preventDefault();
+});
+
+let activeBytes: Uint8Array | null = null;
+
+function fileSelected(data: Blob) {
+  const fr = new FileReader();
+  fr.onloadend = (e) => {
+    activeBytes = new Uint8Array(e.target!!.result as ArrayBuffer);
+    refresh_graph();
+  };
+  fr.readAsArrayBuffer(data);
+}
+
+async function refresh_graph() {
+  if (activeBytes == null) {
+    return;
+  }
+  console.time("flamegraph");
+  await init();
+  const result = parse(activeBytes, includeNativeToggle.checked);
+  console.timeEnd("flamegraph");
+
+  const chart = fg
+    .flamegraph()
+    .width(960)
+    .minFrameSize(1)
+    .onHover((d: Data) => {
+      details.innerText = `${d.data.name} (${d.data.value} samples)`;
+    });
+
+  d3.select("#chart").datum(result).call(chart);
+}
+
+function configureEl<T extends HTMLElement>(
+  id: string,
+  func: (el: T) => void,
+): T {
+  const el = document.getElementById(id) as T;
+  func(el);
+  return el;
+}
+
+interface Data {
+  /**
+   * The payload
+   */
+  readonly data: {
+    readonly name: string;
+    readonly value: number;
+  };
+}
+
+declare module "d3-flame-graph" {
+  interface FlameGraph {
+    onHover(handler: (arg0: any) => void): FlameGraph;
+  }
+}

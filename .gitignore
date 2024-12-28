@@ -4,3 +4,6 @@
 /.idea
 /dist
 icon.rgba
+node_modules
+/pkg
+/.parcel-cache
