@@ -20,6 +20,8 @@ jobs:
         run: cargo build --verbose
       - name: Run tests
         run: cargo test --verbose
+      - name: Install Web Dependencies
+        run: npm install
       - name: Create WASM binary
         run: npx wasm-pack build --target web
       - name: Bundle website
