@@ -1,4 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+body {
+    font-family: "Inter", serif;
+    font-size: 12px;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
 
 foreignObject {
     pointer-events: none;
@@ -6,8 +14,11 @@ foreignObject {
 
 #chart {
     height: 800px;
+    width: 960px;
     overflow: scroll;
     margin-top: 10px;
+    border: 1px solid #212121;
+    border-radius: 3px;
 }
 
 .container {
@@ -22,4 +33,30 @@ foreignObject {
     font-optical-sizing: auto;
     font-size: 13px;
     font-style: normal;
+}
+
+.btn {
+    margin-right: 5px;
+    cursor: pointer;
+    border: 1px solid gray;
+    padding: 5px;
+    border-radius: 3px;
+    background-color: #f8f9fa;
+}
+
+.btn label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.btn:hover {
+    background-color: #d3d4d5;
+}
+
+.btn:active {
+    background-color: #c6c7c8;
+}
+
+body {
+    background-color: #fafafa;
 }

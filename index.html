@@ -12,10 +12,14 @@
     </head>
     <body>
         <div class="container" id="container">
-            <input type="file" id="filePicker" />
-            <input type="checkbox" id="includeNativeToggle" />
-            <label for="includeNativeToggle">Include Native frames</label>
-            <div id="chart" style="background-color: lightgray"></div>
+            <span class="btn" id="fileBtn">
+                <label>Select file...</label>
+            </span>
+            <span class="btn">
+                <input type="checkbox" id="includeNativeToggle" />
+                <label for="includeNativeToggle">Include Native</label>
+            </span>
+            <div id="chart"></div>
             <span id="details"></span>
         </div>
         <script type="module" src="index.ts"></script>

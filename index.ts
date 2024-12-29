@@ -1,9 +1,16 @@
 import init, { parse } from "./pkg/jfrview";
 import * as fg from "d3-flame-graph";
-import * as d3 from "d3";
+import { select } from "d3-selection";
 
-configureEl("filePicker", (input: HTMLInputElement) => {
-  input.onchange = () => fileSelected(input.files!![0]);
+configureEl("fileBtn", (input) => {
+  const el = document.createElement("input");
+  el.type = "file";
+  el.multiple = false;
+  input.onclick = () => el.click();
+  el.onchange = () => {
+    input.innerText = el.files!![0].name;
+    return fileSelected(el.files!![0]);
+  };
 });
 
 const includeNativeToggle = configureEl(
@@ -51,7 +58,7 @@ async function refresh_graph() {
       details.innerText = `${d.data.name} (${d.data.value} samples)`;
     });
 
-  d3.select("#chart").datum(result).call(chart);
+  select("#chart").datum(result).call(chart);
 }
 
 function configureEl<T extends HTMLElement>(
