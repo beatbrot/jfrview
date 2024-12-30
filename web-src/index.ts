@@ -1,4 +1,4 @@
-import init, { parse } from "./pkg/jfrview";
+import init, { parse } from "../pkg/jfrview";
 import * as fg from "d3-flame-graph";
 import { select } from "d3-selection";
 

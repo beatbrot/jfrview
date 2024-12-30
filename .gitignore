@@ -2,8 +2,8 @@
 *.jfr
 *.class
 /.idea
-/dist
+/web-src/dist
 icon.rgba
 node_modules
 /pkg
-/.parcel-cache
+/web-src/.parcel-cache
