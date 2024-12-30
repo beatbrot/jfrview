@@ -1,7 +1,7 @@
 {
   "source": "index.html",
   "scripts": {
-    "build": "parcel build",
+    "build": "parcel build --public-url https://beatbrot.github.io/jfrview/",
     "serve": "parcel index.html"
   },
   "dependencies": {

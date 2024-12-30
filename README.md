@@ -26,7 +26,7 @@ One-Click Flamegraph Visualization for JFR Files in the Browser!
 
 ## Usage
 
-1. Open [the website](https://example.com)
+1. Open [the website](https://beatbrot.github.io/jfrview/)
 2. Drag'n'Drop your JFR file into the black rectangle
 3. Profit
 
