@@ -13,7 +13,7 @@ jobs:
       - name: Create WASM binary
         run: npx wasm-pack build --target web --release
       - name: Bundle website
-        run: npm i && npm run build
+        run: npm ci && npm run build
         working-directory: ./web-src
       - name: Upload artifact
         id: deployment
