@@ -125,7 +125,6 @@ dependencies = [
  "indexmap",
  "insta",
  "jfrs",
- "log",
  "serde",
  "serde-wasm-bindgen",
  "wasm-bindgen",

@@ -1,12 +1,11 @@
 use anyhow::{anyhow, Context};
+use jfrs::reader::value_descriptor::Primitive;
 use jfrs::reader::{
     event::{Accessor, Event},
     value_descriptor::ValueDescriptor,
     JfrReader,
 };
-use log::debug;
 use std::io::{Read, Seek};
-use jfrs::reader::value_descriptor::Primitive;
 
 pub const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
 
@@ -30,7 +29,6 @@ impl ExecutionSample {
 
         for result in reader.chunks() {
             let (mut r, c) = result.with_context(|| "Unable to parse chunk.")?;
-            debug!("Parsing chunk with size {}", c.header.chunk_size);
             for event_res in r.events(&c) {
                 let event = event_res.with_context(|| "Unable to parse event.")?;
                 if event.class.name() == EXEC_SAMPLE || event.class.name() == NATIVE_EXEC_SAMPLE {
@@ -186,7 +184,8 @@ fn extract_symbol(value: &Accessor, name: &str) -> String {
 }
 
 fn extract_nullable_str(value: &Accessor, name: &str) -> Option<String> {
-    value.get_field(name)
+    value
+        .get_field(name)
         .ok_or_else(|| anyhow!("Unable to find field {name}"))
         .map(|v| {
             if let ValueDescriptor::Primitive(Primitive::NullString) = v.value {
