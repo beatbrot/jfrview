@@ -2,13 +2,12 @@ import init, { parse } from "../pkg/jfrview";
 import * as fg from "d3-flame-graph";
 import { select } from "d3-selection";
 
-configureEl("fileBtn", (input) => {
+const btn = configureEl("fileBtn", (input) => {
   const el = document.createElement("input");
   el.type = "file";
   el.multiple = false;
   input.onclick = () => el.click();
   el.onchange = () => {
-    input.innerText = el.files!![0].name;
     return fileSelected(el.files!![0]);
   };
 });
@@ -32,13 +31,14 @@ configureEl("chart", (el) => {
 
 let activeBytes: Uint8Array | null = null;
 
-function fileSelected(data: Blob) {
+function fileSelected(data: File) {
   const fr = new FileReader();
   fr.onloadend = (e) => {
     activeBytes = new Uint8Array(e.target!!.result as ArrayBuffer);
     refresh_graph();
   };
   fr.readAsArrayBuffer(data);
+  btn.innerText = data.name;
 }
 
 async function refresh_graph() {
