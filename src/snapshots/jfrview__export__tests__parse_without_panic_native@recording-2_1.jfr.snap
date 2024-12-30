@@ -1,0 +1,13 @@
+---
+source: src/export.rs
+description: "native, recording-2_1.jfr"
+input_file: test-data/recording-2_1.jfr
+snapshot_kind: text
+---
+org.jline.keymap.BindingReader:readCharacter: (41)
+| org.jline.utils.NonBlockingReader:read: (41)
+| | org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read: (41)
+| | | org.jline.utils.NonBlockingInputStream:read: (41)
+| | | | org.jline.terminal.impl.AbstractPty$PtyInputStream:read: (41)
+| | | | | java.io.FileInputStream:read: (41)
+| | | | | | java.io.FileInputStream:read0: (41)
