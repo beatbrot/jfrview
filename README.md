@@ -8,7 +8,7 @@
 
 </p>
 <p>
-One-Click Flamegraph Visualization for JFR Files, even in the Browser
+One-Click Flamegraph Visualization for JFR Files in the Browser!
 </p>
 
 <picture>
@@ -26,7 +26,7 @@ One-Click Flamegraph Visualization for JFR Files, even in the Browser
 
 ## Usage
 
-1. Open <url>
+1. Open [the website](https://example.com)
 2. Drag'n'Drop your JFR file into the black rectangle
 3. Profit
 
