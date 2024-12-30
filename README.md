@@ -24,13 +24,6 @@ One-Click Flamegraph Visualization for JFR Files, even in the Browser
 - View JFR files in your browser
 - Selectively hide/show native frames
 
-## Installation
-
-Either:
-
-- Open `<url>`
-- Clone the repo and run `cargo install --path .`
-
 ## License
 
 This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more information.
