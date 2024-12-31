@@ -3,7 +3,8 @@
   "description": "One-Click Flamegraph Visualization for JFR Files in the Browser",
   "icons": [
     {
-      "src": "../.github/media/icon.png"
+      "src": "../.github/media/icon.webp",
+      "sizes": "192x192 512x512"
     }
   ],
   "display": "standalone",
