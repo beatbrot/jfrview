@@ -12,12 +12,8 @@ const btn = configureEl("fileBtn", (input) => {
   };
 });
 
-const includeNativeToggle = configureEl(
-  "includeNativeToggle",
-  (el: HTMLInputElement) => {
-    el.onchange = refresh_graph;
-  },
-);
+const includeNativeToggle = refreshGraphOnChange("includeNativeToggle");
+const threadsToggle = refreshGraphOnChange("threadsToggle");
 
 const details = document.getElementById("details") as HTMLSpanElement;
 
@@ -47,7 +43,11 @@ async function refresh_graph() {
   }
   console.time("flamegraph");
   await init();
-  const result = parse(activeBytes, includeNativeToggle.checked);
+  const result = parse(
+    activeBytes,
+    includeNativeToggle.checked,
+    threadsToggle.checked,
+  );
   console.timeEnd("flamegraph");
 
   const chart = fg
@@ -68,6 +68,12 @@ function configureEl<T extends HTMLElement>(
   const el = document.getElementById(id) as T;
   func(el);
   return el;
+}
+
+function refreshGraphOnChange(id: string): HTMLInputElement {
+  return configureEl(id, (el: HTMLInputElement) => {
+    el.onchange = refresh_graph;
+  });
 }
 
 interface Data {

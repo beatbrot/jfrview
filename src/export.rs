@@ -29,22 +29,26 @@ impl Hash for Sample {
 }
 
 impl Sample {
-    pub fn from_file<T>(input: T, include_native: bool) -> anyhow::Result<Self>
+    pub fn from_file<T>(input: T, include_native: bool, threads: bool) -> anyhow::Result<Self>
     where
         T: Read + Seek,
     {
         let mut result = Self::new("root".to_string());
-        ExecutionSample::visit_events(input, |e| result.add_sample(&e, include_native))?;
+        ExecutionSample::visit_events(input, |e| result.add_sample(&e, include_native, threads))?;
 
         Ok(result)
     }
 
-    fn add_sample(&mut self, sample: &ExecutionSample, include_native: bool) {
+    fn add_sample(&mut self, sample: &ExecutionSample, include_native: bool, threads: bool) {
         if sample.native && !include_native {
             return;
         }
         let mut curr = self;
         curr.value += 1;
+        if threads {
+            curr = curr.thread_root(sample);
+            curr.value += 1;
+        }
         for frame in sample.stack_trace.frames.iter() {
             let name = format!("{:?}", frame.method);
             let (idx, _) = curr.children.insert_full(Self::new(name));
@@ -52,6 +56,16 @@ impl Sample {
             sample.value += 1;
             curr = sample;
         }
+    }
+
+    fn thread_root(&mut self, sample: &ExecutionSample) -> &mut Sample {
+        let thread_name = sample
+            .thread
+            .java_name
+            .clone()
+            .unwrap_or_else(|| sample.thread.java_thread_id.to_string());
+        let (idx, _) = self.children.insert_full(Self::new(thread_name));
+        return self.children.get_index_mut2(idx).unwrap();
     }
 
     fn new(name: String) -> Self {
