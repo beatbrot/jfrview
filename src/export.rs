@@ -10,8 +10,15 @@ use serde::Serialize;
 #[derive(Serialize)]
 pub struct Sample {
     name: String,
+    kind: SampleKind,
     value: usize,
     children: IndexSet<Sample>,
+}
+
+#[derive(Serialize)]
+pub enum SampleKind {
+    Exec,
+    Thread,
 }
 
 impl PartialEq for Sample {
@@ -64,13 +71,23 @@ impl Sample {
             .java_name
             .clone()
             .unwrap_or_else(|| sample.thread.java_thread_id.to_string());
-        let (idx, _) = self.children.insert_full(Self::new(thread_name));
+        let (idx, _) = self.children.insert_full(Self::new_thread(thread_name));
         return self.children.get_index_mut2(idx).unwrap();
     }
 
     fn new(name: String) -> Self {
         Self {
             name,
+            kind: SampleKind::Exec,
+            value: 0,
+            children: Default::default(),
+        }
+    }
+
+    fn new_thread(name: String) -> Self {
+        Self {
+            name,
+            kind: SampleKind::Thread,
             value: 0,
             children: Default::default(),
         }

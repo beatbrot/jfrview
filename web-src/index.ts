@@ -54,6 +54,9 @@ async function refresh_graph() {
     .flamegraph()
     .width(960)
     .minFrameSize(1)
+    .setColorMapper((data, orig) => {
+      return data.data.kind === "Thread" ? "#ff0000" : orig;
+    })
     .onHover((d) => {
       details.innerText = `${d.data.name} (${d.data.value} samples)`;
     });
