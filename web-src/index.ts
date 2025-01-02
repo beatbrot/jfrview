@@ -54,7 +54,7 @@ async function refresh_graph() {
     .flamegraph()
     .width(960)
     .minFrameSize(1)
-    .onHover((d: Data) => {
+    .onHover((d) => {
       details.innerText = `${d.data.name} (${d.data.value} samples)`;
     });
 
@@ -88,6 +88,6 @@ interface Data {
 
 declare module "d3-flame-graph" {
   interface FlameGraph {
-    onHover(handler: (arg0: any) => void): FlameGraph;
+    onHover(handler: (data: Data) => void): FlameGraph;
   }
 }
