@@ -112,31 +112,16 @@ mod tests {
     use crate::export::Sample;
 
     #[test]
-    fn parse_without_panic_nonnative() {
+    fn parse_without_panic() {
         glob!("../test-data", "*.jfr", |path| {
             let f = File::open(path).unwrap();
-            let flame_graph = Sample::from_file(f, false);
-            let file_name = path.file_name().unwrap().to_string_lossy();
             insta::with_settings!({
                 omit_expression => true,
-                description => format!("non-native, {}", file_name)
             }, {
-                assert_snapshot!(flame_graph.unwrap());
-            });
-        });
-    }
-
-    #[test]
-    fn parse_without_panic_native() {
-        glob!("../test-data", "*.jfr", |path| {
-            let f = File::open(path).unwrap();
-            let flame_graph = Sample::from_file(f, true);
-            let file_name = path.file_name().unwrap().to_string_lossy();
-            insta::with_settings!({
-                omit_expression => true,
-                description => format!("native, {}", file_name)
-            }, {
-                assert_snapshot!(flame_graph.unwrap());
+                assert_snapshot!("non-native, no-threads", Sample::from_file(f.try_clone().unwrap(), false, false).unwrap());
+                assert_snapshot!("with-native, no-threads", Sample::from_file(f.try_clone().unwrap(), true, false).unwrap());
+                assert_snapshot!("non-native, threads", Sample::from_file(f.try_clone().unwrap(), false, true).unwrap());
+                assert_snapshot!("with-native, threads", Sample::from_file(f.try_clone().unwrap(), true, true).unwrap());
             });
         });
     }
@@ -144,7 +129,7 @@ mod tests {
     #[test]
     fn test_invalid() -> anyhow::Result<()> {
         let file = File::open("test-data/invalid.jfr.fail")?;
-        assert!(Sample::from_file(file, false).is_err());
+        assert!(Sample::from_file(file, false, false).is_err());
         Ok(())
     }
 }

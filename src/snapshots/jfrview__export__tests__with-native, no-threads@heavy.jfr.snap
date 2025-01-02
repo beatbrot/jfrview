@@ -1,6 +1,5 @@
 ---
 source: src/export.rs
-description: "non-native, heavy.jfr"
 input_file: test-data/heavy.jfr
 snapshot_kind: text
 ---
@@ -80,3 +79,12 @@ Heavy:main: (346)
 | | | | | | | | | java.util.stream.Nodes$IntSpinedNodeBuilder:accept: (5)
 | | | | | | | | | | java.util.stream.SpinedBuffer$OfInt:accept: (5)
 | | | | | | | | | | | java.util.stream.SpinedBuffer$OfPrimitive:preAccept: (5)
+java.lang.Thread:run: (44)
+| java.lang.Thread:runWith: (44)
+| | jdk.jfr.internal.PlatformRecorder$$Lambda+0x000001c39a042338.1457410641:run: (44)
+| | | jdk.jfr.internal.PlatformRecorder:lambda$startDiskMonitor$1: (44)
+| | | | jdk.jfr.internal.PlatformRecorder:periodicTask: (44)
+| | | | | jdk.jfr.internal.periodic.PeriodicEvents:doPeriodic: (44)
+| | | | | | jdk.jfr.internal.periodic.PeriodicTask:run: (44)
+| | | | | | | jdk.jfr.internal.periodic.JVMEventTask:execute: (44)
+| | | | | | | | jdk.jfr.internal.JVM:emitEvent: (44)

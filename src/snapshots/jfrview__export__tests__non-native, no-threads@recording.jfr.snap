@@ -1,6 +1,5 @@
 ---
 source: src/export.rs
-description: "non-native, recording.jfr"
 input_file: test-data/recording.jfr
 snapshot_kind: text
 ---
