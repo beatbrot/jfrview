@@ -1,6 +1,7 @@
 import init, { parse } from "../pkg/jfrview";
 import * as fg from "d3-flame-graph";
 import { select } from "d3-selection";
+import { pick_color } from "./colors";
 
 const btn = configureEl("fileBtn", (input) => {
   const el = document.createElement("input");
@@ -56,8 +57,8 @@ async function refresh_graph() {
     .flamegraph()
     .width(960)
     .minFrameSize(1)
-    .setColorMapper((data, orig) => {
-      return data.data.kind === "Thread" ? "#ff0000" : orig;
+    .setColorMapper((data, _) => {
+      return pick_color(data.data);
     })
     .onHover((d) => {
       details.innerText = `${d.data.name} (${d.data.value} samples)`;
