@@ -19,6 +19,7 @@ pub struct Sample {
 pub enum SampleKind {
     Exec,
     Thread,
+    Other,
 }
 
 impl PartialEq for Sample {
@@ -40,7 +41,7 @@ impl Sample {
     where
         T: Read + Seek,
     {
-        let mut result = Self::new("root".to_string());
+        let mut result = Self::root();
         ExecutionSample::visit_events(input, |e| result.add_sample(&e, include_native, threads))?;
 
         Ok(result)
@@ -73,6 +74,15 @@ impl Sample {
             .unwrap_or_else(|| sample.thread.java_thread_id.to_string());
         let (idx, _) = self.children.insert_full(Self::new_thread(thread_name));
         return self.children.get_index_mut2(idx).unwrap();
+    }
+
+    fn root() -> Self {
+        Self {
+            name: "root".to_string(),
+            value: Default::default(),
+            children: Default::default(),
+            kind: SampleKind::Other,
+        }
     }
 
     fn new(name: String) -> Self {

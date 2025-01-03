@@ -1,6 +1,7 @@
 import init, { parse } from "../pkg/jfrview";
 import * as fg from "d3-flame-graph";
 import { select } from "d3-selection";
+import { pick_color } from "./colors";
 
 const btn = configureEl("fileBtn", (input) => {
   const el = document.createElement("input");
@@ -26,6 +27,8 @@ configureEl("chart", (el) => {
 });
 
 let activeBytes: Uint8Array | null = null;
+
+configureHmr();
 
 function fileSelected(data: File) {
   const fr = new FileReader();
@@ -54,8 +57,8 @@ async function refresh_graph() {
     .flamegraph()
     .width(960)
     .minFrameSize(1)
-    .setColorMapper((data, orig) => {
-      return data.data.kind === "Thread" ? "#ff0000" : orig;
+    .setColorMapper((data, _) => {
+      return pick_color(data.data);
     })
     .onHover((d) => {
       details.innerText = `${d.data.name} (${d.data.value} samples)`;
@@ -79,6 +82,21 @@ function refreshGraphOnChange(id: string): HTMLInputElement {
   });
 }
 
+/**
+ * Restore the current state of the flamegraph after hot module reload
+ */
+function configureHmr() {
+  if (module.hot) {
+    module.hot.dispose((data: any) => {
+      data.activeBytes = activeBytes;
+    });
+    module.hot.accept((_: any) => {
+      activeBytes = module.hot.data.activeBytes;
+      refresh_graph();
+    });
+  }
+}
+
 interface Data {
   /**
    * The payload
@@ -88,6 +106,10 @@ interface Data {
     readonly value: number;
   };
 }
+
+declare const module: {
+  hot: any;
+};
 
 declare module "d3-flame-graph" {
   interface FlameGraph {
