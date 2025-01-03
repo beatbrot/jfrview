@@ -27,6 +27,8 @@ configureEl("chart", (el) => {
 
 let activeBytes: Uint8Array | null = null;
 
+configureHmr();
+
 function fileSelected(data: File) {
   const fr = new FileReader();
   fr.onloadend = (e) => {
@@ -79,6 +81,21 @@ function refreshGraphOnChange(id: string): HTMLInputElement {
   });
 }
 
+/**
+ * Restore the current state of the flamegraph after hot module reload
+ */
+function configureHmr() {
+  if (module.hot) {
+    module.hot.dispose((data: any) => {
+      data.activeBytes = activeBytes;
+    });
+    module.hot.accept((_: any) => {
+      activeBytes = module.hot.data.activeBytes;
+      refresh_graph();
+    });
+  }
+}
+
 interface Data {
   /**
    * The payload
@@ -88,6 +105,10 @@ interface Data {
     readonly value: number;
   };
 }
+
+declare const module: {
+  hot: any;
+};
 
 declare module "d3-flame-graph" {
   interface FlameGraph {
