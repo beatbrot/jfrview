@@ -1,6 +1,5 @@
 ---
 source: src/export.rs
-description: "non-native, profiler-multichunk.jfr"
 input_file: test-data/profiler-multichunk.jfr
 snapshot_kind: text
 ---

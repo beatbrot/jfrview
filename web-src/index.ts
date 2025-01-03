@@ -12,12 +12,8 @@ const btn = configureEl("fileBtn", (input) => {
   };
 });
 
-const includeNativeToggle = configureEl(
-  "includeNativeToggle",
-  (el: HTMLInputElement) => {
-    el.onchange = refresh_graph;
-  },
-);
+const includeNativeToggle = refreshGraphOnChange("includeNativeToggle");
+const threadsToggle = refreshGraphOnChange("threadsToggle");
 
 const details = document.getElementById("details") as HTMLSpanElement;
 
@@ -47,14 +43,21 @@ async function refresh_graph() {
   }
   console.time("flamegraph");
   await init();
-  const result = parse(activeBytes, includeNativeToggle.checked);
+  const result = parse(
+    activeBytes,
+    includeNativeToggle.checked,
+    threadsToggle.checked,
+  );
   console.timeEnd("flamegraph");
 
   const chart = fg
     .flamegraph()
     .width(960)
     .minFrameSize(1)
-    .onHover((d: Data) => {
+    .setColorMapper((data, orig) => {
+      return data.data.kind === "Thread" ? "#ff0000" : orig;
+    })
+    .onHover((d) => {
       details.innerText = `${d.data.name} (${d.data.value} samples)`;
     });
 
@@ -70,6 +73,12 @@ function configureEl<T extends HTMLElement>(
   return el;
 }
 
+function refreshGraphOnChange(id: string): HTMLInputElement {
+  return configureEl(id, (el: HTMLInputElement) => {
+    el.onchange = refresh_graph;
+  });
+}
+
 interface Data {
   /**
    * The payload
@@ -82,6 +91,6 @@ interface Data {
 
 declare module "d3-flame-graph" {
   interface FlameGraph {
-    onHover(handler: (arg0: any) => void): FlameGraph;
+    onHover(handler: (data: Data) => void): FlameGraph;
   }
 }
