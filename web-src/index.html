@@ -3,17 +3,9 @@
     <head>
         <meta charset="utf-8" />
         <title>JfrView</title>
-        <link
-            rel="icon"
-            type="image/x-icon"
-            href="../.github/media/icon.webp"
-        />
+        <link rel="icon" type="image/x-icon" href="../.github/media/icon.webp" />
         <link rel="manifest" href="manifest.json" />
-        <link
-            rel="stylesheet"
-            type="text/css"
-            href="node_modules/d3-flame-graph/dist/d3-flamegraph.css"
-        />
+        <link rel="stylesheet" type="text/css" href="node_modules/d3-flame-graph/dist/d3-flamegraph.css" />
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
@@ -21,10 +13,7 @@
             <span class="btn" id="fileBtn">
                 <label>Select file...</label>
             </span>
-            <span
-                class="btn"
-                title="Include samples from native methods (JNI, intrinsics, etc.)"
-            >
+            <span class="btn" title="Include samples from native methods (JNI, intrinsics, etc.)">
                 <input type="checkbox" id="includeNativeToggle" />
                 <label for="includeNativeToggle">Include Native</label>
             </span>
@@ -34,6 +23,11 @@
             </span>
             <div id="chart"></div>
             <span id="details"></span>
+            <footer style="text-align: right">
+                <a href="https://github.com/beatbrot/jfrview/issues/new">Report an issue</a>
+                &middot;
+                <a href="https://github.com/beatbrot/jfrview">GitHub</a>
+            </footer>
         </div>
         <script type="module" src="index.ts"></script>
     </body>
