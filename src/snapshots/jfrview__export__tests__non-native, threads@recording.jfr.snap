@@ -1,7 +1,6 @@
 ---
 source: src/export.rs
 input_file: test-data/recording.jfr
-snapshot_kind: text
 ---
 JFR Periodic Tasks: (3)
 | java.lang.Thread:run: (3)

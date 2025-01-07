@@ -1,7 +1,6 @@
 ---
 source: src/export.rs
 input_file: test-data/recording.jfr
-snapshot_kind: text
 ---
 java.lang.Thread:run: (252)
 | java.util.concurrent.ThreadPoolExecutor$Worker:run: (249)

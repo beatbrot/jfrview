@@ -1,7 +1,6 @@
 ---
 source: src/export.rs
 input_file: test-data/profiler-multichunk.jfr
-snapshot_kind: text
 ---
 0: (4805)
 | :/usr/lib/aarch64-linux-gnu/libc.so.6: (4505)
