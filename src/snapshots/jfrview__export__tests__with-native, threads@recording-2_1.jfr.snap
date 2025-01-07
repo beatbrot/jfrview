@@ -1,7 +1,6 @@
 ---
 source: src/export.rs
 input_file: test-data/recording-2_1.jfr
-snapshot_kind: text
 ---
 main: (41)
 | org.jline.keymap.BindingReader:readCharacter: (41)

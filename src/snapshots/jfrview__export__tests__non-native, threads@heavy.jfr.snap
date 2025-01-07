@@ -1,7 +1,6 @@
 ---
 source: src/export.rs
 input_file: test-data/heavy.jfr
-snapshot_kind: text
 ---
 main: (346)
 | Heavy:main: (346)

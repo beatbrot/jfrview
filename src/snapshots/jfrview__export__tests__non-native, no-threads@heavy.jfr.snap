@@ -1,7 +1,6 @@
 ---
 source: src/export.rs
 input_file: test-data/heavy.jfr
-snapshot_kind: text
 ---
 Heavy:main: (346)
 | java.util.stream.IntPipeline:toArray: (346)

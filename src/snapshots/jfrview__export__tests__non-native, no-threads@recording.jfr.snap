@@ -1,7 +1,6 @@
 ---
 source: src/export.rs
 input_file: test-data/recording.jfr
-snapshot_kind: text
 ---
 java.lang.Thread:run: (3)
 | jdk.jfr.internal.PlatformRecorder$$Lambda$55.205465701:run: (3)
