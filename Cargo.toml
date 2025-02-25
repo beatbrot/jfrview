@@ -14,7 +14,7 @@ indexmap = { version = "2.7.1", features = ["serde"] }
 jfrs = "0.2.5"
 anyhow = "1.0.96"
 wasm-bindgen = "0.2.97"
-serde = { version = "1.0.215", features = ["derive"] }
+serde = { version = "1.0.218", features = ["derive"] }
 serde-wasm-bindgen = "0.6.5"
 
 [dev-dependencies]
