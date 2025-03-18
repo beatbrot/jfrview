@@ -3,7 +3,7 @@ name = "jfrview"
 version = "0.1.0"
 repository = "https://github.com/beatbrot/jfrview"
 description = "One-Click Flamegraph Visualization for JFR Files in the Browser"
-edition = "2021"
+edition = "2024"
 license = "MIT"
 
 [lib]

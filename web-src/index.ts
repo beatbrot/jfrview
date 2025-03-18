@@ -1,4 +1,4 @@
-import init, { parse } from "../pkg/jfrview";
+import init, { parse, jfr_stats } from "../pkg/jfrview";
 import * as fg from "d3-flame-graph";
 import { select } from "d3-selection";
 import { pick_color } from "./colors";
@@ -51,6 +51,7 @@ async function refresh_graph() {
     includeNativeToggle.checked,
     threadsToggle.checked,
   );
+  console.log(jfr_stats(activeBytes));
   console.timeEnd("flamegraph");
 
   const chart = fg

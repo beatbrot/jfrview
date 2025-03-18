@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fs::File};
+use std::{collections::HashSet, fs::File, path::PathBuf};
 
 use jfrs::reader::{type_descriptor::TypePool, JfrReader};
 
@@ -14,6 +14,14 @@ pub fn type_explorer(mut reader: JfrReader<File>, type_name: &str) {
         let mut visited = HashSet::<i64>::new();
         print_type(tp, &mut visited, 0, event.class.class_id);
     }
+}
+
+#[test]
+fn analyze() -> anyhow::Result<()>{
+    let file = File::open(PathBuf::from("test-data/Heavy.jfr"))?;
+    let reader = JfrReader::new(file);
+    type_explorer(reader, "jdk.ActiveSetting");
+    Ok(())
 }
 
 fn print_type(tp: &TypePool, visited: &mut HashSet<i64>, indent: usize, class_id: i64) {

@@ -1,15 +1,77 @@
-use anyhow::{anyhow, Context};
+use anyhow::{Context, anyhow};
 use jfrs::reader::value_descriptor::Primitive;
 use jfrs::reader::{
+    JfrReader,
     event::{Accessor, Event},
     value_descriptor::ValueDescriptor,
-    JfrReader,
 };
+use serde::Serialize;
 use std::io::{Read, Seek};
 
 pub const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
 
 pub const NATIVE_EXEC_SAMPLE: &str = "jdk.NativeMethodSample";
+
+#[derive(Debug, Serialize)]
+pub struct Stats {
+    pub start: i64,
+    pub end: i64,
+    pub events: Vec<String>,
+}
+
+impl Stats {
+    pub fn from<T: Read + Seek>(source: T, type_name: &str) -> anyhow::Result<Stats> {
+        let mut reader = JfrReader::new(source);
+        let chunks = reader.chunks();
+        let mut start: i64 = i64::MAX;
+        let mut end: i64 = i64::MIN;
+        let mut events: Vec<String> = Vec::new();
+        for (mut r, chunk) in chunks.flatten() {
+            for ev in r.events(&chunk).flatten() {
+                let time: i64 = extract_primitive(&ev.value(), "startTime");
+                start = start.min(time);
+                end = end.max(time);
+                if ev.class.name() == type_name {
+                    events.push(Self::handle_event(&ev));
+                }
+            }
+        }
+        if start == -1 || end == -1 {
+            Err(anyhow!("Could not load stats {start} and {end}"))
+        } else {
+            Ok(Stats { start, end, events })
+        }
+    }
+
+    fn handle_event(ev: &Event) -> String {
+        match ev.class.name() {
+            "jdk.GCPhasePause" => format!("{}", extract_primitive::<i64>(&ev.value(), "duration")),
+            "jdk.ActiveSetting" => format!(
+                "{}={}",
+                extract_str(&ev.value(), "settingFor"),
+                extract_str(&ev.value(), "value")
+            ),
+            _ => ev.class.name().to_string(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs::File;
+
+    use super::Stats;
+
+    #[test]
+    fn print_stats() -> anyhow::Result<()> {
+        let f = File::open("test-data/heavy.jfr")?;
+        let stats = Stats::from(f, "jdk.ActiveSetting")?;
+
+        println!("{stats:?}");
+        //assert!(stats.start == 0);
+        Ok(())
+    }
+}
 
 #[derive(Debug)]
 #[allow(dead_code)]
@@ -181,6 +243,10 @@ impl From<Accessor<'_>> for Class {
 fn extract_symbol(value: &Accessor, name: &str) -> String {
     let str: &str = extract_primitive(&value.get_field(name).unwrap(), "string");
     str.to_string()
+}
+
+fn extract_str(value: &Accessor, name: &str) -> String {
+    extract_nullable_str(value, name).unwrap_or_default()
 }
 
 fn extract_nullable_str(value: &Accessor, name: &str) -> Option<String> {
