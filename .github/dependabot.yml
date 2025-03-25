@@ -8,3 +8,6 @@ updates:
     directory: "/web-src/"
     schedule:
       interval: "weekly"
+    groups:
+      parcel:
+        patterns: ["parcel", "@parcel/*"]
