@@ -9,9 +9,9 @@
     "d3-selection": "^3.0.0"
   },
   "devDependencies": {
-    "@parcel/packager-raw-url": "^2.15.0",
-    "@parcel/transformer-webmanifest": "^2.15.0",
+    "@parcel/packager-raw-url": "^2.15.4",
+    "@parcel/transformer-webmanifest": "^2.15.4",
     "@types/d3-selection": "^3.0.11",
-    "parcel": "^2.15.0"
+    "parcel": "^2.15.4"
   }
 }
