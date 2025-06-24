@@ -25,3 +25,7 @@ opt-level = "s"
 strip = true
 lto = "thin"
 codegen-units = 1
+
+[package.metadata.wasm-pack.profile.release]
+# Workaround for https://github.com/rustwasm/wasm-pack/issues/1501
+wasm-opt = ["--enable-bulk-memory", "--enable-nontrapping-float-to-int"]
