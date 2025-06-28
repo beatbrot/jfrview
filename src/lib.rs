@@ -1,11 +1,12 @@
-use crate::export::Sample;
 use std::fmt::Debug;
 use std::io::Cursor;
-use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
 
-mod data;
-mod export;
+pub mod data;
+pub mod export;
+
+pub use crate::export::Sample;
 
 #[wasm_bindgen]
 pub fn parse(input: Vec<u8>, include_native: bool, threads: bool) -> Result<JsValue, String> {
