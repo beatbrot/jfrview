@@ -7,7 +7,7 @@ edition = "2024"
 license = "MIT"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["lib", "cdylib"]
 
 [dependencies]
 indexmap = { version = "2.9.0", features = ["serde"] }
@@ -19,12 +19,17 @@ serde-wasm-bindgen = "0.6.5"
 
 [dev-dependencies]
 insta = { version = "1.43.1", features = ["glob"] }
+divan = "0.1.12"
+
+[[bench]]
+name = "full_parse"
+harness = false
 
 [profile.release]
-opt-level = "s"
-strip = true
-lto = "thin"
-codegen-units = 1
+debug = "line-tables-only"
+
+[profile.bench]
+debug = "line-tables-only"
 
 [package.metadata.wasm-pack.profile.release]
 # Workaround for https://github.com/rustwasm/wasm-pack/issues/1501
