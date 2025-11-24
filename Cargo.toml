@@ -10,7 +10,7 @@ license = "MIT"
 crate-type = ["cdylib"]
 
 [dependencies]
-indexmap = { version = "2.12.0", features = ["serde"] }
+indexmap = { version = "2.12.1", features = ["serde"] }
 jfrs = "0.2.5"
 anyhow = "1.0.100"
 wasm-bindgen = "0.2.97"
