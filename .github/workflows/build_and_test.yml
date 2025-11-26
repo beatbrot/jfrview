@@ -25,6 +25,3 @@ jobs:
         run: cargo test --verbose
       - name: Create WASM binary
         run: npx wasm-pack build --target web
-      - name: Bundle website
-        run: npm ci && npm run build
-        working-directory: ./web-src
