@@ -48,12 +48,25 @@ impl From<ExecutionSample> for Frames {
 mod tests {
     use std::fs::File;
 
+    use insta::{assert_yaml_snapshot, glob};
+
     use crate::speedscope::export;
 
     #[test]
-    fn convert_heavy_rich() -> anyhow::Result<()> {
-        let file = File::open("test-data/heavy.jfr")?;
-        export(file, false)?;
+    fn convert_valid_files() -> anyhow::Result<()> {
+        glob!("../test-data", "*.jfr", |path| {
+            let file = File::open(path).unwrap();
+            assert_yaml_snapshot!("non-native", export(file, false).unwrap());
+        });
+        Ok(())
+    }
+
+    #[test]
+    fn handle_invalid_files() -> anyhow::Result<()> {
+        glob!("../test-data", "*.jfr.fail", |path| {
+            let file = File::open(path).unwrap();
+            assert!(export(file, false).is_err());
+        });
 
         Ok(())
     }
