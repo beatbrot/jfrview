@@ -21,3 +21,20 @@ pub fn interpret_jfr(input: Vec<u8>, include_native: bool) -> Result<Vec<MethodS
 fn to_str(t: impl Debug) -> String {
     format!("{t:?}")
 }
+
+#[cfg(test)]
+mod tests {
+    wasm_bindgen_test_configure!(run_in_browser);
+
+    use wasm_bindgen_test::{wasm_bindgen_test, wasm_bindgen_test_configure};
+
+    use crate::interpret_jfr;
+
+    const HEAVY: &'static [u8] = include_bytes!("../test-data/heavy.jfr");
+
+    #[wasm_bindgen_test]
+    fn interpret_heavy() {
+        interpret_jfr(HEAVY.into(), false).unwrap();
+        interpret_jfr(HEAVY.into(), true).unwrap();
+    }
+}
