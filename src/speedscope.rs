@@ -5,34 +5,38 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::data::{ExecutionSample, StackFrame};
 
-pub fn export<T>(input: T, include_native: bool) -> anyhow::Result<Vec<Frames>>
+pub fn export<T>(input: T, include_native: bool) -> anyhow::Result<Vec<MethodSample>>
 where
     T: Read + Seek,
 {
-    let mut result: Vec<Frames> = Vec::new();
+    let mut result: Vec<MethodSample> = Vec::new();
     ExecutionSample::visit_events(input, |s| {
         if s.native && !include_native {
             // NoOp
         } else {
-            result.push(Frames::from(s))
+            result.push(MethodSample::from(s))
         }
     })?;
 
     return Ok(result);
 }
 
+/// A sample containing a method call.
+///
+/// Contains the stacktrace at the point of sampling
 #[derive(Debug, Serialize)]
-pub struct Frames {
+#[wasm_bindgen(getter_with_clone)]
+pub struct MethodSample {
     pub frames: Vec<Frame>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 #[wasm_bindgen(getter_with_clone)]
 pub struct Frame {
-    name: String,
+    pub name: String,
 }
 
-impl From<ExecutionSample> for Frames {
+impl From<ExecutionSample> for MethodSample {
     fn from(value: ExecutionSample) -> Self {
         fn to_frame(sf: &StackFrame) -> Frame {
             Frame {

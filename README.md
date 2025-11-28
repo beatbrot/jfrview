@@ -8,12 +8,8 @@
 
 </p>
 <p>
-One-Click Flamegraph Visualization for JFR Files in the Browser!
+A library for extracting method samples from JFR files.
 </p>
-
-<picture>
-    <img alt="Screenshot of JfrView" src=".github/media/screenshot.png" />
-</picture>
 
 </div>
 
@@ -21,14 +17,12 @@ One-Click Flamegraph Visualization for JFR Files in the Browser!
 ## Features
 
 - Directly open JFR files
-- View JFR files in your browser
+- Compatible with WebAssembly
 - Selectively hide/show native frames
 
-## Usage
+## Usaged by
 
-1. Open [the website](https://beatbrot.github.io/jfrview/)
-2. Drag'n'Drop your JFR file into the black rectangle
-3. Profit
+- Noone yet
 
 ## License
 
