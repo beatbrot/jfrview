@@ -1,0 +1,6 @@
+[
+  {
+    "label": "Build WASM",
+    "command": "wasm-pack build --target web --release"
+  }
+]
