@@ -1,0 +1,23 @@
+---
+source: src/speedscope.rs
+expression: "export(file, false).unwrap()"
+input_file: test-data/recording.jfr
+---
+- frames:
+    - name: "java.lang.Thread:run"
+    - name: "jdk.jfr.internal.PlatformRecorder$$Lambda$55.205465701:run"
+    - name: "jdk.jfr.internal.PlatformRecorder:lambda$startDiskMonitor$1"
+    - name: "jdk.jfr.internal.PlatformRecorder:periodicTask"
+    - name: "jdk.jfr.internal.PlatformRecorder:takeNap"
+- frames:
+    - name: "java.lang.Thread:run"
+    - name: "jdk.jfr.internal.PlatformRecorder$$Lambda$55.205465701:run"
+    - name: "jdk.jfr.internal.PlatformRecorder:lambda$startDiskMonitor$1"
+    - name: "jdk.jfr.internal.PlatformRecorder:periodicTask"
+    - name: "jdk.jfr.internal.PlatformRecorder:takeNap"
+- frames:
+    - name: "java.lang.Thread:run"
+    - name: "jdk.jfr.internal.PlatformRecorder$$Lambda$55.205465701:run"
+    - name: "jdk.jfr.internal.PlatformRecorder:lambda$startDiskMonitor$1"
+    - name: "jdk.jfr.internal.PlatformRecorder:periodicTask"
+    - name: "jdk.jfr.internal.PlatformRecorder:takeNap"

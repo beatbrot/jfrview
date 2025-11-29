@@ -1,9 +1,9 @@
-use anyhow::{anyhow, Context};
+use anyhow::{Context, anyhow};
 use jfrs::reader::value_descriptor::Primitive;
 use jfrs::reader::{
+    JfrReader,
     event::{Accessor, Event},
     value_descriptor::ValueDescriptor,
-    JfrReader,
 };
 use std::io::{Read, Seek};
 

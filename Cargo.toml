@@ -18,7 +18,8 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde-wasm-bindgen = "0.6.5"
 
 [dev-dependencies]
-insta = { version = "1.44.1", features = ["glob"] }
+insta = { version = "1.44.1", features = ["glob", "yaml"] }
+wasm-bindgen-test = "0.3.56"
 
 [profile.release]
 opt-level = "s"
@@ -28,4 +29,4 @@ codegen-units = 1
 
 [package.metadata.wasm-pack.profile.release]
 # Workaround for https://github.com/rustwasm/wasm-pack/issues/1501
-wasm-opt = ["--enable-bulk-memory", "--enable-nontrapping-float-to-int"]
+wasm-opt = ["--enable-bulk-memory", "--enable-nontrapping-float-to-int", "-Oz"]

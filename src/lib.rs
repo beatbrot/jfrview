@@ -1,19 +1,40 @@
-use crate::export::Sample;
+use crate::speedscope::MethodSample;
 use std::fmt::Debug;
 use std::io::Cursor;
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::JsValue;
 
 mod data;
-mod export;
+mod speedscope;
 
+/// Converts the content of a JFR file to a Vec of stacktraces.
+///
+/// The stacktraces are sorted by execution order.
+///
+/// You can specify `include_native` to also record JNI or other calls to native methods.
 #[wasm_bindgen]
-pub fn parse(input: Vec<u8>, include_native: bool, threads: bool) -> Result<JsValue, String> {
+pub fn interpret_jfr(input: Vec<u8>, include_native: bool) -> Result<Vec<MethodSample>, String> {
     let cursor = Cursor::new(input);
-    let export = Sample::from_file(cursor, include_native, threads).map_err(to_str)?;
-    serde_wasm_bindgen::to_value(&export).map_err(to_str)
+    let export = speedscope::export(cursor, include_native).map_err(to_str)?;
+    return Ok(export);
 }
 
 fn to_str(t: impl Debug) -> String {
     format!("{t:?}")
+}
+
+#[cfg(test)]
+mod tests {
+    wasm_bindgen_test_configure!(run_in_browser);
+
+    use wasm_bindgen_test::{wasm_bindgen_test, wasm_bindgen_test_configure};
+
+    use crate::interpret_jfr;
+
+    const HEAVY: &'static [u8] = include_bytes!("../test-data/heavy.jfr");
+
+    #[wasm_bindgen_test]
+    fn interpret_heavy() {
+        interpret_jfr(HEAVY.into(), false).unwrap();
+        interpret_jfr(HEAVY.into(), true).unwrap();
+    }
 }
