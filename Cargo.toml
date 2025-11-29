@@ -7,7 +7,7 @@ edition = "2024"
 license = "MIT"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "lib"]
 
 [dependencies]
 indexmap = { version = "2.12.1", features = ["serde"] }
@@ -21,6 +21,9 @@ serde-wasm-bindgen = "0.6.5"
 insta = { version = "1.44.1", features = ["glob", "yaml"] }
 wasm-bindgen-test = "0.3.56"
 
+[target.'cfg(target_arch = "x86_64")'.dev-dependencies]
+criterion = { package = "codspeed-criterion-compat", version = "4.1.0" }
+
 [profile.release]
 opt-level = "s"
 strip = true
@@ -30,3 +33,7 @@ codegen-units = 1
 [package.metadata.wasm-pack.profile.release]
 # Workaround for https://github.com/rustwasm/wasm-pack/issues/1501
 wasm-opt = ["--enable-bulk-memory", "--enable-nontrapping-float-to-int", "-Oz"]
+
+[[bench]]
+name = "interpret"
+harness = false
