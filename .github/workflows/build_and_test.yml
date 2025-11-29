@@ -27,6 +27,8 @@ jobs:
         run: cargo test --verbose
       - name: Run WASM test
         run: wasm-pack test --headless --firefox .
+      - name: Build benchmarks
+        run: cargo codspeed build
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v4
         with:
