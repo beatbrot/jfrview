@@ -21,6 +21,7 @@ jobs:
       - uses: moonrepo/setup-rust@v1
         with:
           bins: wasm-pack, cargo-codspeed
+          targets: wasm32-unknown-unknown,x86_64-unknown-linux-gnu
       - name: Build
         run: cargo build --verbose
       - name: Run tests
