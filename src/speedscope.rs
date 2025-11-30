@@ -1,5 +1,6 @@
 use std::io::{Read, Seek};
 
+#[cfg(test)]
 use serde::Serialize;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -24,13 +25,14 @@ where
 /// A sample containing a method call.
 ///
 /// Contains the stacktrace at the point of sampling
-#[derive(Debug, Serialize)]
+#[cfg_attr(test, derive(Serialize))]
 #[wasm_bindgen(getter_with_clone)]
 pub struct MethodSample {
     pub frames: Vec<Frame>,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Clone)]
+#[cfg_attr(test, derive(Serialize))]
 #[wasm_bindgen(getter_with_clone)]
 pub struct Frame {
     pub name: String,
