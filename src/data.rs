@@ -154,7 +154,7 @@ impl Method {
     pub fn to_string(&self) -> String {
         let cls_name = &self.class.name;
         let mut result = String::with_capacity(self.class.name.len() + 1 + self.name.len());
-        result.push_str(&cls_name);
+        result.push_str(&cls_name.replace('/', "."));
         result.push(':');
         result.push_str(&self.name);
         return result;
