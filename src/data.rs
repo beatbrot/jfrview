@@ -163,10 +163,7 @@ impl Method {
 
 impl From<Accessor<'_>> for Method {
     fn from(value: Accessor<'_>) -> Self {
-        let name: String = extract_symbol(&value, "name")
-            .chars()
-            .map(|c| if c == '/' { '.' } else { c })
-            .collect();
+        let name: String = extract_symbol(&value, "name").to_string();
         let class: Class = value.get_field("type").map(|v| v.into()).unwrap();
         return Self { name, class };
     }
@@ -186,9 +183,11 @@ impl Class {
 
 impl From<Accessor<'_>> for Class {
     fn from(value: Accessor<'_>) -> Self {
-        Self {
-            name: extract_symbol(&value, "name").to_string(),
-        }
+        let name: String = extract_symbol(&value, "name")
+            .chars()
+            .map(|c| if c == '/' { '.' } else { c })
+            .collect();
+        Self { name }
     }
 }
 
