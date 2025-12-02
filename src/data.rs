@@ -125,9 +125,21 @@ impl From<Accessor<'_>> for StackFrame {
     }
 }
 
+impl StackFrame {
+    pub fn to_string(&self) -> String {
+        let method_string = self.method.to_string();
+        let num_string = self.line_number.to_string();
+        let mut result = String::with_capacity(method_string.len() + 1 + num_string.len());
+        result.push_str(&method_string);
+        result.push(':');
+        result.push_str(&num_string);
+        return result;
+    }
+}
+
 impl std::fmt::Debug for StackFrame {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}:{}", self.method, self.line_number)
+        write!(f, "{}:{}", self.method.to_string(), self.line_number)
     }
 }
 
@@ -138,9 +150,14 @@ pub struct Method {
     pub class: Class,
 }
 
-impl std::fmt::Debug for Method {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}:{}", self.class.pretty_name(), self.name)
+impl Method {
+    pub fn to_string(&self) -> String {
+        let cls_name = &self.class.name;
+        let mut result = String::with_capacity(self.class.name.len() + 1 + self.name.len());
+        result.push_str(&cls_name);
+        result.push(':');
+        result.push_str(&self.name);
+        return result;
     }
 }
 
@@ -161,12 +178,6 @@ pub struct Class {
 impl Class {
     pub fn pretty_name(&self) -> String {
         self.name.replace('/', ".")
-    }
-}
-
-impl std::fmt::Display for Class {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.name)
     }
 }
 

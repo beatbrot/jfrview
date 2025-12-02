@@ -42,7 +42,7 @@ impl From<ExecutionSample> for MethodSample {
     fn from(value: ExecutionSample) -> Self {
         fn to_frame(sf: &StackFrame) -> Frame {
             Frame {
-                name: format!("{:?}", sf.method),
+                name: sf.method.to_string(),
             }
         }
         let frames: Vec<_> = value.stack_trace.frames.iter().map(to_frame).collect();
