@@ -154,7 +154,7 @@ impl Method {
     pub fn to_string(&self) -> String {
         let cls_name = &self.class.name;
         let mut result = String::with_capacity(self.class.name.len() + 1 + self.name.len());
-        result.push_str(&cls_name.replace('/', "."));
+        result.push_str(&cls_name);
         result.push(':');
         result.push_str(&self.name);
         return result;
@@ -163,7 +163,10 @@ impl Method {
 
 impl From<Accessor<'_>> for Method {
     fn from(value: Accessor<'_>) -> Self {
-        let name = extract_symbol(&value, "name");
+        let name: String = extract_symbol(&value, "name")
+            .chars()
+            .map(|c| if c == '/' { '.' } else { c })
+            .collect();
         let class: Class = value.get_field("type").map(|v| v.into()).unwrap();
         return Self { name, class };
     }
@@ -184,14 +187,14 @@ impl Class {
 impl From<Accessor<'_>> for Class {
     fn from(value: Accessor<'_>) -> Self {
         Self {
-            name: extract_symbol(&value, "name"),
+            name: extract_symbol(&value, "name").to_string(),
         }
     }
 }
 
-fn extract_symbol(value: &Accessor, name: &str) -> String {
+fn extract_symbol<'a>(value: &'a Accessor, name: &str) -> &'a str {
     let str: &str = extract_primitive(&value.get_field(name).unwrap(), "string");
-    str.to_string()
+    str
 }
 
 fn extract_nullable_str(value: &Accessor, name: &str) -> Option<String> {
