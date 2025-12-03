@@ -4,6 +4,7 @@
 <p>
 
 ![GitHub branch status](https://img.shields.io/github/checks-status/beatbrot/jfrview/master)
+[![CodSpeed Badge](https://img.shields.io/endpoint?url=https://codspeed.io/badge.json)](https://codspeed.io/beatbrot/jfrview?utm_source=badge)
 [![License](https://img.shields.io/github/license/beatbrot/jfrview)](https://mit-license.org/)
 
 </p>
