@@ -183,10 +183,14 @@ impl Class {
 
 impl From<Accessor<'_>> for Class {
     fn from(value: Accessor<'_>) -> Self {
-        let name: String = extract_symbol(&value, "name")
-            .chars()
-            .map(|c| if c == '/' { '.' } else { c })
-            .collect();
+        let jvm_name: &str = extract_symbol(&value, "name");
+        let mut bytes = jvm_name.as_bytes().to_vec();
+        for ele in bytes.iter_mut() {
+            if *ele == b'/' {
+                *ele = b'.';
+            }
+        }
+        let name: String = unsafe { String::from_utf8_unchecked(bytes) };
         Self { name }
     }
 }
