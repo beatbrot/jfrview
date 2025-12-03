@@ -125,9 +125,21 @@ impl From<Accessor<'_>> for StackFrame {
     }
 }
 
+impl StackFrame {
+    pub fn to_string(&self) -> String {
+        let method_string = self.method.to_string();
+        let num_string = self.line_number.to_string();
+        let mut result = String::with_capacity(method_string.len() + 1 + num_string.len());
+        result.push_str(&method_string);
+        result.push(':');
+        result.push_str(&num_string);
+        return result;
+    }
+}
+
 impl std::fmt::Debug for StackFrame {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}:{}", self.method, self.line_number)
+        write!(f, "{}:{}", self.method.to_string(), self.line_number)
     }
 }
 
@@ -138,15 +150,20 @@ pub struct Method {
     pub class: Class,
 }
 
-impl std::fmt::Debug for Method {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}:{}", self.class.pretty_name(), self.name)
+impl Method {
+    pub fn to_string(&self) -> String {
+        let cls_name = &self.class.name;
+        let mut result = String::with_capacity(self.class.name.len() + 1 + self.name.len());
+        result.push_str(&cls_name);
+        result.push(':');
+        result.push_str(&self.name);
+        return result;
     }
 }
 
 impl From<Accessor<'_>> for Method {
     fn from(value: Accessor<'_>) -> Self {
-        let name = extract_symbol(&value, "name");
+        let name: String = extract_symbol(&value, "name").to_string();
         let class: Class = value.get_field("type").map(|v| v.into()).unwrap();
         return Self { name, class };
     }
@@ -164,23 +181,23 @@ impl Class {
     }
 }
 
-impl std::fmt::Display for Class {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.name)
-    }
-}
-
 impl From<Accessor<'_>> for Class {
     fn from(value: Accessor<'_>) -> Self {
-        Self {
-            name: extract_symbol(&value, "name"),
+        let jvm_name: &str = extract_symbol(&value, "name");
+        let mut bytes = jvm_name.as_bytes().to_vec();
+        for ele in bytes.iter_mut() {
+            if *ele == b'/' {
+                *ele = b'.';
+            }
         }
+        let name: String = unsafe { String::from_utf8_unchecked(bytes) };
+        Self { name }
     }
 }
 
-fn extract_symbol(value: &Accessor, name: &str) -> String {
+fn extract_symbol<'a>(value: &'a Accessor, name: &str) -> &'a str {
     let str: &str = extract_primitive(&value.get_field(name).unwrap(), "string");
-    str.to_string()
+    str
 }
 
 fn extract_nullable_str(value: &Accessor, name: &str) -> Option<String> {
