@@ -1,3 +1,5 @@
+#![allow(clippy::inherent_to_string)]
+
 use crate::speedscope::MethodSample;
 use std::fmt::Debug;
 use std::io::Cursor;
@@ -13,7 +15,7 @@ mod speedscope;
 pub fn interpret_jfr(input: Vec<u8>) -> Result<Vec<MethodSample>, String> {
     let cursor = Cursor::new(input);
     let export = speedscope::export(cursor).map_err(to_str)?;
-    return Ok(export);
+    Ok(export)
 }
 
 fn to_str(t: impl Debug) -> String {

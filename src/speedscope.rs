@@ -13,7 +13,7 @@ where
     let mut result: Vec<MethodSample> = Vec::new();
     ExecutionSample::visit_events(input, |s| result.push(MethodSample::from(s)))?;
 
-    return Ok(result);
+    Ok(result)
 }
 
 /// A sample containing a method call.
