@@ -6,18 +6,12 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::data::{ExecutionSample, StackFrame};
 
-pub fn export<T>(input: T, include_native: bool) -> anyhow::Result<Vec<MethodSample>>
+pub fn export<T>(input: T) -> anyhow::Result<Vec<MethodSample>>
 where
     T: Read + Seek,
 {
     let mut result: Vec<MethodSample> = Vec::new();
-    ExecutionSample::visit_events(input, |s| {
-        if s.native && !include_native {
-            // NoOp
-        } else {
-            result.push(MethodSample::from(s))
-        }
-    })?;
+    ExecutionSample::visit_events(input, |s| result.push(MethodSample::from(s)))?;
 
     return Ok(result);
 }
@@ -29,6 +23,7 @@ where
 #[wasm_bindgen(getter_with_clone)]
 pub struct MethodSample {
     pub frames: Vec<Frame>,
+    pub native: bool,
 }
 
 #[derive(Clone)]
@@ -46,7 +41,10 @@ impl From<ExecutionSample> for MethodSample {
             }
         }
         let frames: Vec<_> = value.stack_trace.frames.iter().map(to_frame).collect();
-        Self { frames }
+        Self {
+            frames,
+            native: value.native,
+        }
     }
 }
 
@@ -62,7 +60,7 @@ mod tests {
     fn convert_valid_files() -> anyhow::Result<()> {
         glob!("../test-data", "*.jfr", |path| {
             let file = File::open(path).unwrap();
-            assert_yaml_snapshot!("non-native", export(file, false).unwrap());
+            assert_yaml_snapshot!(export(file).unwrap());
         });
         Ok(())
     }
@@ -71,7 +69,7 @@ mod tests {
     fn handle_invalid_files() -> anyhow::Result<()> {
         glob!("../test-data", "*.jfr.fail", |path| {
             let file = File::open(path).unwrap();
-            assert!(export(file, false).is_err());
+            assert!(export(file).is_err());
         });
 
         Ok(())

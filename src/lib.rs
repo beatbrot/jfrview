@@ -9,12 +9,10 @@ mod speedscope;
 /// Converts the content of a JFR file to a Vec of stacktraces.
 ///
 /// The stacktraces are sorted by execution order.
-///
-/// You can specify `include_native` to also record JNI or other calls to native methods.
 #[wasm_bindgen]
-pub fn interpret_jfr(input: Vec<u8>, include_native: bool) -> Result<Vec<MethodSample>, String> {
+pub fn interpret_jfr(input: Vec<u8>) -> Result<Vec<MethodSample>, String> {
     let cursor = Cursor::new(input);
-    let export = speedscope::export(cursor, include_native).map_err(to_str)?;
+    let export = speedscope::export(cursor).map_err(to_str)?;
     return Ok(export);
 }
 
@@ -34,7 +32,7 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn interpret_heavy() {
-        interpret_jfr(HEAVY.into(), false).unwrap();
-        interpret_jfr(HEAVY.into(), true).unwrap();
+        interpret_jfr(HEAVY.into()).unwrap();
+        interpret_jfr(HEAVY.into()).unwrap();
     }
 }
