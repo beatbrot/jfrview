@@ -1,6 +1,0 @@
----
-source: src/speedscope.rs
-expression: "export(file, false).unwrap()"
-input_file: test-data/recording-2_1.jfr
----
-[]

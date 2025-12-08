@@ -1,0 +1,375 @@
+---
+source: src/speedscope.rs
+assertion_line: 69
+expression: "export(file, true).unwrap()"
+input_file: test-data/recording-2_1.jfr
+---
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true
+- frames:
+    - name: "org.jline.keymap.BindingReader:readCharacter"
+    - name: "org.jline.utils.NonBlockingReader:read"
+    - name: "org.jline.utils.NonBlocking$NonBlockingInputStreamReader:read"
+    - name: "org.jline.utils.NonBlockingInputStream:read"
+    - name: "org.jline.terminal.impl.AbstractPty$PtyInputStream:read"
+    - name: "java.io.FileInputStream:read"
+    - name: "java.io.FileInputStream:read0"
+  native: true

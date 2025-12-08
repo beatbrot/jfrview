@@ -29,6 +29,7 @@ where
 #[wasm_bindgen(getter_with_clone)]
 pub struct MethodSample {
     pub frames: Vec<Frame>,
+    pub native: bool,
 }
 
 #[derive(Clone)]
@@ -46,7 +47,10 @@ impl From<ExecutionSample> for MethodSample {
             }
         }
         let frames: Vec<_> = value.stack_trace.frames.iter().map(to_frame).collect();
-        Self { frames }
+        Self {
+            frames,
+            native: value.native,
+        }
     }
 }
 
@@ -62,7 +66,7 @@ mod tests {
     fn convert_valid_files() -> anyhow::Result<()> {
         glob!("../test-data", "*.jfr", |path| {
             let file = File::open(path).unwrap();
-            assert_yaml_snapshot!("non-native", export(file, false).unwrap());
+            assert_yaml_snapshot!(export(file, true).unwrap());
         });
         Ok(())
     }
@@ -71,7 +75,7 @@ mod tests {
     fn handle_invalid_files() -> anyhow::Result<()> {
         glob!("../test-data", "*.jfr.fail", |path| {
             let file = File::open(path).unwrap();
-            assert!(export(file, false).is_err());
+            assert!(export(file, true).is_err());
         });
 
         Ok(())
