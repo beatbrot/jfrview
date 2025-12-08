@@ -6,18 +6,12 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::data::{ExecutionSample, StackFrame};
 
-pub fn export<T>(input: T, include_native: bool) -> anyhow::Result<Vec<MethodSample>>
+pub fn export<T>(input: T) -> anyhow::Result<Vec<MethodSample>>
 where
     T: Read + Seek,
 {
     let mut result: Vec<MethodSample> = Vec::new();
-    ExecutionSample::visit_events(input, |s| {
-        if s.native && !include_native {
-            // NoOp
-        } else {
-            result.push(MethodSample::from(s))
-        }
-    })?;
+    ExecutionSample::visit_events(input, |s| result.push(MethodSample::from(s)))?;
 
     return Ok(result);
 }
@@ -66,7 +60,7 @@ mod tests {
     fn convert_valid_files() -> anyhow::Result<()> {
         glob!("../test-data", "*.jfr", |path| {
             let file = File::open(path).unwrap();
-            assert_yaml_snapshot!(export(file, true).unwrap());
+            assert_yaml_snapshot!(export(file).unwrap());
         });
         Ok(())
     }
@@ -75,7 +69,7 @@ mod tests {
     fn handle_invalid_files() -> anyhow::Result<()> {
         glob!("../test-data", "*.jfr.fail", |path| {
             let file = File::open(path).unwrap();
-            assert!(export(file, true).is_err());
+            assert!(export(file).is_err());
         });
 
         Ok(())
