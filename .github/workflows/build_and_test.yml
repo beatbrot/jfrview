@@ -38,6 +38,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: extractions/setup-just@v3
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
@@ -45,11 +46,9 @@ jobs:
         with:
           bins: wasm-pack
           targets: wasm32-unknown-unknown,x86_64-unknown-linux-gnu
-      - name: Build
-        run: cargo build --verbose
+      - name: Check
+        run: cargo check
       - name: Run tests
-        run: cargo test --verbose
-      - name: Run WASM test
-        run: wasm-pack test --headless --firefox .
+        run: just test
       - name: Create WASM binary
         run: wasm-pack build --target web

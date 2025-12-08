@@ -133,7 +133,7 @@ impl StackFrame {
         result.push_str(&method_string);
         result.push(':');
         result.push_str(&num_string);
-        return result;
+        result
     }
 }
 
@@ -154,10 +154,10 @@ impl Method {
     pub fn to_string(&self) -> String {
         let cls_name = &self.class.name;
         let mut result = String::with_capacity(self.class.name.len() + 1 + self.name.len());
-        result.push_str(&cls_name);
+        result.push_str(cls_name);
         result.push(':');
         result.push_str(&self.name);
-        return result;
+        result
     }
 }
 
@@ -165,7 +165,7 @@ impl From<Accessor<'_>> for Method {
     fn from(value: Accessor<'_>) -> Self {
         let name: String = extract_symbol(&value, "name").to_string();
         let class: Class = value.get_field("type").map(|v| v.into()).unwrap();
-        return Self { name, class };
+        Self { name, class }
     }
 }
 
