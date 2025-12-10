@@ -36,7 +36,10 @@ impl From<ExecutionSample> for MethodSample {
                 name: sf.method.to_string(),
             }
         }
-        let frames: Vec<_> = value.stack_trace.frames.iter().map(to_frame).collect();
+        let raw_frames = value.stack_trace.frames;
+        let mut frames = Vec::with_capacity(raw_frames.len());
+        raw_frames.iter().map(to_frame).for_each(|f| frames.push(f));
+
         Self {
             frames,
             native: value.native,
