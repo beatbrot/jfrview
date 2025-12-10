@@ -91,13 +91,9 @@ pub struct StackTrace {
 impl From<Accessor<'_>> for StackTrace {
     fn from(value: Accessor<'_>) -> Self {
         let truncated: bool = extract_primitive(&value, "truncated");
-        let mut frames: Vec<StackFrame> = value
-            .get_field("frames")
-            .unwrap()
-            .as_iter()
-            .unwrap()
-            .map(|a| a.into())
-            .collect();
+        let fi = value.get_field("frames").unwrap().as_iter().unwrap();
+        let mut frames = Vec::with_capacity(fi.size_hint().0);
+        fi.map(|a| a.into()).for_each(|e| frames.push(e));
         frames.reverse();
 
         Self { truncated, frames }
