@@ -1,8 +1,7 @@
 use std::io::{Read, Seek};
 
-#[cfg(test)]
 use serde::Serialize;
-use wasm_bindgen::prelude::wasm_bindgen;
+use string_cache::DefaultAtom;
 
 use crate::data::{ExecutionSample, StackFrame};
 
@@ -19,18 +18,15 @@ where
 /// A sample containing a method call.
 ///
 /// Contains the stacktrace at the point of sampling
-#[cfg_attr(test, derive(Serialize))]
-#[wasm_bindgen(getter_with_clone)]
+#[derive(Serialize)]
 pub struct MethodSample {
     pub frames: Vec<Frame>,
     pub native: bool,
 }
 
-#[derive(Clone)]
-#[cfg_attr(test, derive(Serialize))]
-#[wasm_bindgen(getter_with_clone)]
+#[derive(Clone, Serialize)]
 pub struct Frame {
-    pub name: String,
+    pub name: DefaultAtom,
 }
 
 impl From<ExecutionSample> for MethodSample {

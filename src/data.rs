@@ -6,12 +6,12 @@ use jfrs::reader::{
     value_descriptor::ValueDescriptor,
 };
 use std::io::{Read, Seek};
+use string_cache::DefaultAtom;
 
 pub const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
 
 pub const NATIVE_EXEC_SAMPLE: &str = "jdk.NativeMethodSample";
 
-#[derive(Debug)]
 #[allow(dead_code)]
 pub struct ExecutionSample {
     pub start_time: i64,
@@ -82,7 +82,6 @@ impl PartialEq for Thread {
     }
 }
 
-#[derive(Debug)]
 #[allow(dead_code)]
 pub struct StackTrace {
     pub truncated: bool,
@@ -108,38 +107,17 @@ impl From<Accessor<'_>> for StackTrace {
 #[allow(dead_code)]
 pub struct StackFrame {
     pub line_number: i32,
-    pub bytecode_index: i32,
     pub method: Method,
 }
 
 impl From<Accessor<'_>> for StackFrame {
     fn from(value: Accessor<'_>) -> Self {
-        let bytecode_index: i32 = extract_primitive(&value, "bytecodeIndex");
         let line_number: i32 = extract_primitive(&value, "lineNumber");
         let method: Method = value.get_field("method").map(|v| v.into()).unwrap();
         Self {
             method,
             line_number,
-            bytecode_index,
         }
-    }
-}
-
-impl StackFrame {
-    pub fn to_string(&self) -> String {
-        let method_string = self.method.to_string();
-        let num_string = self.line_number.to_string();
-        let mut result = String::with_capacity(method_string.len() + 1 + num_string.len());
-        result.push_str(&method_string);
-        result.push(':');
-        result.push_str(&num_string);
-        result
-    }
-}
-
-impl std::fmt::Debug for StackFrame {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}:{}", self.method.to_string(), self.line_number)
     }
 }
 
@@ -151,13 +129,13 @@ pub struct Method {
 }
 
 impl Method {
-    pub fn to_string(&self) -> String {
+    pub fn to_string(&self) -> DefaultAtom {
         let cls_name = &self.class.name;
         let mut result = String::with_capacity(self.class.name.len() + 1 + self.name.len());
         result.push_str(cls_name);
         result.push(':');
         result.push_str(&self.name);
-        result
+        DefaultAtom::from(result)
     }
 }
 
