@@ -59,19 +59,22 @@ fn read_frame(cache: &mut NameCache, value: Accessor<'_>) -> Result<Frame> {
     let cls_name = extract_symbol(&raw_class, "name");
     let mut result = String::with_capacity(cls_name.len() + 1 + method_name.len());
 
-    if !cache.contains_key(cls_name) {
-        let mut cached_cls_name = String::with_capacity(cls_name.len());
-        for byte in cls_name.chars() {
+    // Replacing slashes with dot in the class name is surprisingly expensive
+    // Since we expect to encounter the same class rather often, we cache this operation
+
+    let normalized: &str = cache.entry_ref(cls_name).or_insert_with_key(|c| {
+        let mut cached_cls_name = String::with_capacity(c.len());
+        for byte in c.chars() {
             let mut b = byte;
             if byte == '/' {
                 b = '.';
             }
             cached_cls_name.push(b);
         }
-        cache.insert(cls_name.to_string(), cached_cls_name);
-    }
+        cached_cls_name
+    });
 
-    result.push_str(cache.get(cls_name).unwrap());
+    result.push_str(normalized);
     result.push(':');
     result.push_str(method_name);
 
