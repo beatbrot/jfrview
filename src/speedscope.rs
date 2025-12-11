@@ -1,16 +1,23 @@
 use std::io::{Read, Seek};
 
 use anyhow::{Context, Ok, Result};
+use hashbrown::HashMap;
 use jfrs::reader::{JfrReader, event::Accessor, value_descriptor::ValueDescriptor};
+#[cfg(test)]
 use serde::Serialize;
-use string_cache::DefaultAtom;
+use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::data::{EXEC_SAMPLE, ExecutionSample, NATIVE_EXEC_SAMPLE, StackFrame};
+pub const EXEC_SAMPLE: &str = "jdk.ExecutionSample";
+
+pub const NATIVE_EXEC_SAMPLE: &str = "jdk.NativeMethodSample";
+
+type NameCache = HashMap<String, String>;
 
 pub fn export<T>(input: T) -> anyhow::Result<Vec<MethodSample>>
 where
     T: Read + Seek,
 {
+    let mut cache: NameCache = HashMap::with_capacity(32);
     let mut result = Vec::<MethodSample>::new();
     let mut reader = JfrReader::new(input);
 
@@ -23,7 +30,7 @@ where
             if cls_name == EXEC_SAMPLE || cls_name == NATIVE_EXEC_SAMPLE {
                 let native = cls_name == NATIVE_EXEC_SAMPLE;
                 let st_raw = event.value().get_field("stackTrace").unwrap();
-                let frames = read_stacktrace(st_raw)?;
+                let frames = read_stacktrace(&mut cache, st_raw)?;
                 let sample = MethodSample { frames, native };
                 result.push(sample);
             }
@@ -33,31 +40,38 @@ where
     Ok(result)
 }
 
-fn read_stacktrace(value: Accessor<'_>) -> Result<Vec<Frame>> {
+fn read_stacktrace(cache: &mut NameCache, value: Accessor<'_>) -> Result<Vec<Frame>> {
     let frames_raw = value.get_field("frames").unwrap().as_iter().unwrap();
     let mut frames = Vec::with_capacity(frames_raw.size_hint().0);
     for raw_frame in frames_raw {
-        let f = read_frame(raw_frame)?;
+        let f = read_frame(cache, raw_frame)?;
         frames.push(f);
     }
     frames.reverse();
     Ok(frames)
 }
 
-fn read_frame(value: Accessor<'_>) -> Result<Frame> {
+fn read_frame(cache: &mut NameCache, value: Accessor<'_>) -> Result<Frame> {
     let raw_method = value.get_field("method").unwrap();
     let method_name = extract_symbol(&raw_method, "name");
     let raw_class = raw_method.get_field("type").unwrap();
     raw_class.get_field("name").unwrap();
     let cls_name = extract_symbol(&raw_class, "name");
     let mut result = String::with_capacity(cls_name.len() + 1 + method_name.len());
-    for byte in cls_name.chars() {
-        let mut b = byte;
-        if byte == '/' {
-            b = '.';
+
+    if !cache.contains_key(cls_name) {
+        let mut cached_cls_name = String::with_capacity(cls_name.len());
+        for byte in cls_name.chars() {
+            let mut b = byte;
+            if byte == '/' {
+                b = '.';
+            }
+            cached_cls_name.push(b);
         }
-        result.push(b);
+        cache.insert(cls_name.to_string(), cached_cls_name);
     }
+
+    result.push_str(cache.get(cls_name).unwrap());
     result.push(':');
     result.push_str(method_name);
 
@@ -79,46 +93,21 @@ where
         .unwrap()
 }
 
-pub fn export_old<T>(input: T) -> anyhow::Result<Vec<MethodSample>>
-where
-    T: Read + Seek,
-{
-    let mut result: Vec<MethodSample> = Vec::new();
-    ExecutionSample::visit_events(input, |s| result.push(MethodSample::from(s)))?;
-
-    Ok(result)
-}
-
 /// A sample containing a method call.
 ///
 /// Contains the stacktrace at the point of sampling
-#[derive(Serialize)]
+#[cfg_attr(test, derive(Serialize))]
+#[wasm_bindgen(getter_with_clone)]
 pub struct MethodSample {
     pub frames: Vec<Frame>,
     pub native: bool,
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone)]
+#[cfg_attr(test, derive(Serialize))]
+#[wasm_bindgen(getter_with_clone)]
 pub struct Frame {
     pub name: String,
-}
-
-impl From<ExecutionSample> for MethodSample {
-    fn from(value: ExecutionSample) -> Self {
-        fn to_frame(sf: &StackFrame) -> Frame {
-            Frame {
-                name: sf.method.to_string(),
-            }
-        }
-        let raw_frames = value.stack_trace.frames;
-        let mut frames = Vec::with_capacity(raw_frames.len());
-        raw_frames.iter().map(to_frame).for_each(|f| frames.push(f));
-
-        Self {
-            frames,
-            native: value.native,
-        }
-    }
 }
 
 #[cfg(test)]

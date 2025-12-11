@@ -2,24 +2,17 @@
 
 use std::fmt::Debug;
 use std::io::Cursor;
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::speedscope::MethodSample;
 
-mod data;
 mod speedscope;
 
 /// Converts the content of a JFR file to a Vec of stacktraces.
 ///
 /// The stacktraces are sorted by execution order.
 #[wasm_bindgen]
-pub fn interpret_jfr(input: Vec<u8>) -> Result<JsValue, String> {
-    let export = interpret_jfr_internal(input);
-    serde_wasm_bindgen::to_value(&export).map_err(to_str)
-}
-
-pub fn interpret_jfr_internal(input: Vec<u8>) -> Result<Vec<MethodSample>, String> {
+pub fn interpret_jfr(input: Vec<u8>) -> Result<Vec<MethodSample>, String> {
     let cursor = Cursor::new(input);
     speedscope::export(cursor).map_err(to_str)
 }
