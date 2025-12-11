@@ -61,9 +61,7 @@ fn read_frame(value: Accessor<'_>) -> Result<Frame> {
     result.push(':');
     result.push_str(method_name);
 
-    Ok(Frame {
-        name: DefaultAtom::from(result),
-    })
+    Ok(Frame { name: result })
 }
 
 fn extract_symbol<'a>(value: &'a Accessor, name: &str) -> &'a str {
@@ -102,7 +100,7 @@ pub struct MethodSample {
 
 #[derive(Clone, Serialize)]
 pub struct Frame {
-    pub name: DefaultAtom,
+    pub name: String,
 }
 
 impl From<ExecutionSample> for MethodSample {
