@@ -6,7 +6,7 @@
   "type": "module",
   "devDependencies": {
     "@codspeed/tinybench-plugin": "^5.0.1",
-    "tinybench": "^6.0.0",
+    "tinybench": "^4.0.1",
     "jfrview": "file:../pkg"
   }
 }
