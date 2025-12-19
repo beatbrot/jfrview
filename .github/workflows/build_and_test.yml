@@ -26,11 +26,16 @@ jobs:
           targets: x86_64-unknown-linux-gnu
       - name: Build benchmarks
         run: cargo codspeed build
-      - name: Run benchmarks
+      - name: Run Cargo benchmarks
         uses: CodSpeedHQ/action@v4
         with:
           mode: simulation
           run: cargo codspeed run
+      - name: Run Node benchmarks
+        uses: CodSpeedHQ/action@v4
+        with:
+          mode: simulation
+          run: just node-bench
 
   build:
     permissions:
