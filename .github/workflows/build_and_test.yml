@@ -36,7 +36,7 @@ jobs:
           mode: simulation
           run: cargo codspeed run
       - name: Prepare Node benchmarks
-        run: just node-bench
+        run: just prepare-node-bench
       - name: Run Node benchmarks
         uses: CodSpeedHQ/action@v4
         with:
