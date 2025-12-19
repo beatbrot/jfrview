@@ -23,8 +23,8 @@ jobs:
       - uses: extractions/setup-just@v3
       - uses: moonrepo/setup-rust@v1
         with:
-          bins: cargo-codspeed
-          targets: x86_64-unknown-linux-gnu
+          bins: cargo-codspeed,was-pack
+          targets: x86_64-unknown-linux-gnu,x86_64-unknown-linux-gnu
       - name: Build benchmarks
         run: cargo codspeed build
       - name: Run Cargo benchmarks
