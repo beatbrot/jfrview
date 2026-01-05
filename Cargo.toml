@@ -16,7 +16,7 @@ wasm-bindgen = "0.2.97"
 hashbrown = "0.16.1"
 
 [dev-dependencies]
-insta = { version = "1.45.1", features = ["glob", "yaml"] }
+insta = { version = "1.46.0", features = ["glob", "yaml"] }
 serde = { version = "1.0.228", features = ["derive"] }
 wasm-bindgen-test = "0.3.56"
 
