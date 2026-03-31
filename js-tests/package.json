@@ -1,0 +1,12 @@
+{
+  "name": "js-tests",
+  "scripts": {
+    "bench": "node benches/bench.mjs"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@codspeed/tinybench-plugin": "^5.0.1",
+    "tinybench": "^4.0.1",
+    "jfrview": "file:../pkg"
+  }
+}
