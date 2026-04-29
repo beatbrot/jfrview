@@ -21,9 +21,9 @@ A library for extracting method samples from JFR files.
 - Compatible with WebAssembly
 - Selectively hide/show native frames
 
-## Usaged by
+## Used by
 
-- Noone yet
+- [Speedscope](https://github.com/jlfwong/speedscope)
 
 ## License
 
