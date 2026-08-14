@@ -31,9 +31,11 @@ mod tests {
 
     const HEAVY: &'static [u8] = include_bytes!("../test-data/heavy.jfr");
 
+    const MULTICHUNK: &'static [u8] = include_bytes!("../test-data/profiler-multichunk.jfr");
+
     #[wasm_bindgen_test]
     fn interpret_heavy() {
         interpret_jfr(HEAVY.into()).unwrap();
-        interpret_jfr(HEAVY.into()).unwrap();
+        interpret_jfr(MULTICHUNK.into()).unwrap();
     }
 }

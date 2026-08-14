@@ -33,6 +33,10 @@ codegen-units = 1
 # Workaround for https://github.com/rustwasm/wasm-pack/issues/1501
 wasm-opt = ["--enable-bulk-memory", "--enable-nontrapping-float-to-int", "-Oz"]
 
+[package.metadata.wasm-pack.profile.profiling]
+# Workaround for https://github.com/rustwasm/wasm-pack/issues/1501
+wasm-opt = ["--enable-bulk-memory", "--enable-nontrapping-float-to-int", "-Oz"]
+
 [[bench]]
 name = "interpret"
 harness = false
